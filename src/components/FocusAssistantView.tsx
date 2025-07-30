@@ -683,3 +683,5 @@ export function FocusAssistantView() {
     </div>
   );
 }
+
+export default FocusAssistantView;

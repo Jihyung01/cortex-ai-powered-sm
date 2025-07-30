@@ -776,3 +776,5 @@ export const ProjectsView = memo(() => {
 });
 
 ProjectsView.displayName = 'ProjectsView';
+
+export default ProjectsView;

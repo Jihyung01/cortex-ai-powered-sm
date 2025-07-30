@@ -686,3 +686,5 @@ export function IntelligentTimeView() {
     </div>
   );
 }
+
+export default IntelligentTimeView;

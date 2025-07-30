@@ -507,3 +507,5 @@ export const TeamView = memo(() => {
 });
 
 TeamView.displayName = 'TeamView';
+
+export default TeamView;

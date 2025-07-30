@@ -15,17 +15,18 @@ const AnalyticsView = lazy(() => import('@/components/AnalyticsView'));
 const AIAssistantView = lazy(() => import('@/components/AIAssistantView'));
 
 // Enterprise components with enhanced lazy loading
-const TeamView = lazy(() => import('@/components/TeamView').then(module => ({ default: module.TeamView })));
-const ProjectsView = lazy(() => import('@/components/ProjectsView').then(module => ({ default: module.ProjectsView })));
-const CollaborationView = lazy(() => import('@/components/CollaborationView').then(module => ({ default: module.CollaborationView })));
-const IntegrationsView = lazy(() => import('@/components/IntegrationsView').then(module => ({ default: module.IntegrationsView })));
-const AdminView = lazy(() => import('@/components/AdminView').then(module => ({ default: module.AdminView })));
+const TeamView = lazy(() => import('@/components/TeamView'));
+const ProjectsView = lazy(() => import('@/components/ProjectsView'));
+const CollaborationView = lazy(() => import('@/components/CollaborationView'));
+const IntegrationsView = lazy(() => import('@/components/IntegrationsView'));
+const AdminView = lazy(() => import('@/components/AdminView'));
+const ClientPortalView = lazy(() => import('@/components/ClientPortalView'));
 
 // Advanced feature components
-const FocusAssistantView = lazy(() => import('@/components/FocusAssistantView').then(module => ({ default: module.FocusAssistantView })));
-const IntelligentTimeView = lazy(() => import('@/components/IntelligentTimeView').then(module => ({ default: module.IntelligentTimeView })));
-const WellnessView = lazy(() => import('@/components/WellnessView').then(module => ({ default: module.WellnessView })));
-const FutureTechView = lazy(() => import('@/components/FutureTechView').then(module => ({ default: module.FutureTechView })));
+const FocusAssistantView = lazy(() => import('@/components/FocusAssistantView'));
+const IntelligentTimeView = lazy(() => import('@/components/IntelligentTimeView'));
+const WellnessView = lazy(() => import('@/components/WellnessView'));
+const FutureTechView = lazy(() => import('@/components/FutureTechView'));
 
 // Enterprise-specific views
 const SubscriptionManagement = lazy(() => import('@/components/enterprise').then(module => ({ default: module.SubscriptionManagement })));
@@ -250,6 +251,7 @@ export const LazyProjectsView = withLazyLoading(ProjectsView, 'grid', 'Projects'
 export const LazyCollaborationView = withLazyLoading(CollaborationView, 'default', 'Collaboration');
 export const LazyIntegrationsView = withLazyLoading(IntegrationsView, 'grid', 'Integrations');
 export const LazyAdminView = withLazyLoading(AdminView, 'dashboard', 'Admin Panel');
+export const LazyClientPortalView = withLazyLoading(ClientPortalView, 'default', 'Client Portal');
 
 // Advanced features
 export const LazyFocusAssistantView = withLazyLoading(FocusAssistantView, 'default', 'Focus Assistant');
@@ -281,6 +283,7 @@ export const getViewComponent = (viewName: string) => {
     collaboration: LazyCollaborationView,
     integrations: LazyIntegrationsView,
     admin: LazyAdminView,
+    'client-portal': LazyClientPortalView,
     'focus-assistant': LazyFocusAssistantView,
     'intelligent-time': LazyIntelligentTimeView,
     wellness: LazyWellnessView,

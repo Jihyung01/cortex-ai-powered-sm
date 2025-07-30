@@ -14,3 +14,5 @@ export function TasksView() {
     </div>
   );
 }
+
+export default TasksView;

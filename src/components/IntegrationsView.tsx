@@ -701,3 +701,5 @@ export const IntegrationsView = memo(() => {
 });
 
 IntegrationsView.displayName = 'IntegrationsView';
+
+export default IntegrationsView;

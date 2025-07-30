@@ -13,4 +13,4 @@ export function CalendarView() {
       </Card>
     </div>
   );
-}
+}export default CalendarView;

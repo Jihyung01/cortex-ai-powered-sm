@@ -919,3 +919,5 @@ export function FutureTechView() {
     </div>
   );
 }
+
+export default FutureTechView;

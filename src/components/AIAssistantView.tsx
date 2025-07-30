@@ -13,4 +13,4 @@ export function AIAssistantView() {
       </Card>
     </div>
   );
-}
+}export default AIAssistantView;

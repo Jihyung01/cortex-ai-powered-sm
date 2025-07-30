@@ -247,3 +247,5 @@ export const ClientPortalView = memo(() => {
 });
 
 ClientPortalView.displayName = 'ClientPortalView';
+
+export default ClientPortalView;

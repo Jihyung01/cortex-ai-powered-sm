@@ -490,4 +490,4 @@ export function AnalyticsView() {
       </div>
     </div>
   );
-}
+}export default AnalyticsView;

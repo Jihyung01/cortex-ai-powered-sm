@@ -13,4 +13,4 @@ export function TimelineView() {
       </Card>
     </div>
   );
-}
+}export default TimelineView;

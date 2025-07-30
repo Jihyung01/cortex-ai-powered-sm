@@ -753,3 +753,5 @@ export function WellnessView() {
     </div>
   );
 }
+
+export default WellnessView;

@@ -13,4 +13,4 @@ export function KanbanView() {
       </Card>
     </div>
   );
-}
+}export default KanbanView;

@@ -565,3 +565,5 @@ export const CollaborationView = memo(() => {
 });
 
 CollaborationView.displayName = 'CollaborationView';
+
+export default CollaborationView;

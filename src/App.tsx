@@ -21,7 +21,8 @@ import {
   preloadCriticalComponents,
   addResourceHints
 } from '@/components/ProductionOptimizations';
-import { useAppState } from '@/hooks/use-notes';
+import { useAppState, useNotes } from '@/hooks/use-notes';
+import { useTasks } from '@/hooks/use-tasks';
 import { useIsMobile, usePWA } from '@/hooks/use-mobile';
 import { useGestureSupport, useKeyboardNavigation } from '@/hooks/use-accessibility';
 import { useNativeFeatures } from '@/hooks/use-native-features';
@@ -33,6 +34,8 @@ import { useState, useEffect, useCallback } from 'react';
 
 function App() {
   const { currentView, sidebarCollapsed, focusMode } = useAppState();
+  const { addNote } = useNotes();
+  const { addTask } = useTasks();
   const isMobile = useIsMobile();
   const { prefersReducedMotion, getAnimationProps } = useGestureSupport();
   const { isKeyboardUser } = useKeyboardNavigation();
@@ -47,13 +50,17 @@ function App() {
   // Initialize production optimizations
   useEffect(() => {
     const initializeApp = async () => {
-      // Add resource hints for performance
-      addResourceHints();
-      
-      // Preload critical components
-      preloadCriticalComponents();
-      
-      console.log('Cortex production app initialized');
+      try {
+        // Add resource hints for performance
+        addResourceHints();
+        
+        // Preload critical components
+        preloadCriticalComponents();
+        
+        // App initialized successfully
+      } catch (error) {
+        console.error('Failed to initialize app optimizations:', error);
+      }
     };
     
     initializeApp();
@@ -91,141 +98,108 @@ function App() {
   }, []);
 
   const handleCreateTask = useCallback(() => {
-    // Open task creation (implement similar to note creation)
-    console.log('Create task');
-  }, []);
-
-  const handleVoiceNote = useCallback(() => {
-    // Open voice note recording
-    console.log('Voice note');
-  }, []);
-
-  const handleCameraNote = useCallback(() => {
-    // Open camera for note
-    console.log('Camera note');
-  }, []);
-
-  const handleQuickShare = useCallback(() => {
-    // Open quick share
-    console.log('Quick share');
-  }, []);
-
-  const handleSettings = useCallback(() => {
-    // Open settings
-    console.log('Settings');
-  }, []);
-
-  const handleSaveNote = useCallback(async (noteData: any) => {
-    // Save note logic
-    console.log('Saving note:', noteData);
-  }, []);
-
-  const renderCurrentView = () => {
-    const ViewComponent = getViewComponent(currentView);
-    
-    const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
-    const isEnterpriseView = enterpriseViews.includes(currentView);
-    
-    // Wrap enterprise views with error boundary
-    if (isEnterpriseView) {
-      return (
-        <EnterpriseErrorBoundary>
-          <ViewComponent />
-        </EnterpriseErrorBoundary>
-      );
-    }
-
-    return <ViewComponent />;
-  };
-
-function App() {
-  const { currentView, sidebarCollapsed, focusMode } = useAppState();
-  const isMobile = useIsMobile();
-  const { prefersReducedMotion, getAnimationProps } = useGestureSupport();
-  const { isKeyboardUser } = useKeyboardNavigation();
-  const { setupInstallPrompt } = useNativeFeatures();
-  const { syncPendingActions } = useOffline();
-  const { isServiceWorkerReady } = usePWA();
-  
-  // Mobile-specific state
-  const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Initialize production optimizations
-  useEffect(() => {
-    const initializeApp = async () => {
-      // Add resource hints for performance
-      addResourceHints();
-      
-      // Preload critical components
-      preloadCriticalComponents();
-      
-      console.log('Cortex production app initialized');
-    };
-    
-    initializeApp();
-  }, []);
-
-  // Setup PWA features
-  useEffect(() => {
-    const cleanup = setupInstallPrompt();
-    return cleanup;
-  }, [setupInstallPrompt]);
-
-  // Handle URL parameters for PWA shortcuts
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const action = urlParams.get('action');
-    
-    if (action === 'new-note') {
-      setIsQuickNoteOpen(true);
-    }
-  }, []);
-
-  const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
     try {
-      await syncPendingActions();
-      // Simulate data refresh
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    } finally {
-      setRefreshing(false);
+      // Create a quick task - in a real app this would open a task creation modal
+      const newTask = addTask({
+        title: 'New Task',
+        description: '',
+        status: 'todo',
+        priority: 'medium'
+      });
+      
+      console.log('Task created:', newTask);
+      
+      // Show success toast
+      import('sonner').then(({ toast }) => {
+        toast.success('Task created successfully!');
+      });
+    } catch (error) {
+      console.error('Error creating task:', error);
+      import('sonner').then(({ toast }) => {
+        toast.error('Failed to create task. Please try again.');
+      });
     }
-  }, [syncPendingActions]);
+  }, [addTask]);
 
-  const handleCreateNote = useCallback(() => {
-    setIsQuickNoteOpen(true);
+  const handleVoiceNote = useCallback(async () => {
+    try {
+      // In a real app, this would use the Web Speech API
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const { toast } = await import('sonner');
+        toast.info('Voice recording would start here. (Feature in development)');
+      } else {
+        const { toast } = await import('sonner');
+        toast.error('Voice recording not supported in this browser');
+      }
+    } catch (error) {
+      console.error('Voice note error:', error);
+    }
   }, []);
 
-  const handleCreateTask = useCallback(() => {
-    // Open task creation (implement similar to note creation)
-    console.log('Create task');
+  const handleCameraNote = useCallback(async () => {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const { toast } = await import('sonner');
+        toast.info('Camera would open here to capture image for note. (Feature in development)');
+      } else {
+        const { toast } = await import('sonner');
+        toast.error('Camera not supported in this browser');
+      }
+    } catch (error) {
+      console.error('Camera note error:', error);
+    }
   }, []);
 
-  const handleVoiceNote = useCallback(() => {
-    // Open voice note recording
-    console.log('Voice note');
-  }, []);
-
-  const handleCameraNote = useCallback(() => {
-    // Open camera for note
-    console.log('Camera note');
-  }, []);
-
-  const handleQuickShare = useCallback(() => {
-    // Open quick share
-    console.log('Quick share');
+  const handleQuickShare = useCallback(async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Cortex - AI-Powered Notes',
+          text: 'Check out this amazing note-taking app!',
+          url: window.location.href
+        });
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        const { toast } = await import('sonner');
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      const { toast } = await import('sonner');
+      toast.error('Failed to share. Please try again.');
+    }
   }, []);
 
   const handleSettings = useCallback(() => {
-    // Open settings
-    console.log('Settings');
+    // Navigate to settings view
+    try {
+      import('sonner').then(({ toast }) => {
+        toast.info('Settings feature coming soon!');
+      });
+    } catch (error) {
+      console.error('Settings error:', error);
+    }
   }, []);
 
   const handleSaveNote = useCallback(async (noteData: any) => {
-    // Save note logic
-    console.log('Saving note:', noteData);
-  }, []);
+    try {
+      const newNote = addNote(noteData);
+      
+      console.log('Note saved successfully:', newNote);
+      
+      // Show success toast
+      const { toast } = await import('sonner');
+      toast.success('Note created successfully!');
+      
+      return newNote;
+    } catch (error) {
+      console.error('Error saving note:', error);
+      const { toast } = await import('sonner');
+      toast.error('Failed to save note. Please try again.');
+      throw error;
+    }
+  }, [addNote]);
 
   const renderCurrentView = () => {
     const ViewComponent = getViewComponent(currentView);

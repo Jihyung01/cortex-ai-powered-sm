@@ -14,3 +14,5 @@ export function TemplatesView() {
     </div>
   );
 }
+
+export default TemplatesView;

@@ -14,3 +14,5 @@ export function SearchView() {
     </div>
   );
 }
+
+export default SearchView;

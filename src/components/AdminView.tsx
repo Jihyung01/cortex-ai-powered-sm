@@ -145,3 +145,5 @@ export const AdminView = memo(() => {
 });
 
 AdminView.displayName = 'AdminView';
+
+export default AdminView;
