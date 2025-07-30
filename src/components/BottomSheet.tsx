@@ -1,1 +1,452 @@
-import { memo, useState, useEffect, useCallback, useRef } from 'react';\nimport { motion, AnimatePresence } from 'framer-motion';\nimport { Button } from '@/components/ui/button';\nimport { Card } from '@/components/ui/card';\nimport { Input } from '@/components/ui/input';\nimport { Textarea } from '@/components/ui/textarea';\nimport { Badge } from '@/components/ui/badge';\nimport { useMobileGestures } from '@/hooks/use-mobile-gestures';\nimport { useNativeFeatures } from '@/hooks/use-native-features';\nimport { useOffline } from '@/hooks/use-offline';\nimport { useIsMobile } from '@/hooks/use-mobile';\nimport { springPresets } from '@/hooks/use-motion';\nimport { cn } from '@/lib/utils';\nimport { \n  X, \n  Check,\n  Camera,\n  Microphone,\n  Image,\n  MapPin,\n  Share,\n  Save,\n  Loader2,\n  Upload,\n  FileText\n} from '@phosphor-icons/react';\n\ninterface BottomSheetProps {\n  isOpen: boolean;\n  onClose: () => void;\n  title: string;\n  children: React.ReactNode;\n  maxHeight?: string;\n  dismissOnBackdrop?: boolean;\n}\n\nexport const BottomSheet = memo<BottomSheetProps>(({ \n  isOpen, \n  onClose, \n  title, \n  children,\n  maxHeight = '80vh',\n  dismissOnBackdrop = true\n}) => {\n  const isMobile = useIsMobile();\n  const [isDragging, setIsDragging] = useState(false);\n  const [dragY, setDragY] = useState(0);\n  const sheetRef = useRef<HTMLDivElement>(null);\n  const dragStartY = useRef(0);\n  const sheetHeight = useRef(0);\n\n  const { elementRef } = useMobileGestures({\n    onSwipe: (gesture) => {\n      if (gesture.direction === 'down' && gesture.distance > 100) {\n        onClose();\n      }\n    }\n  });\n\n  // Handle drag to dismiss\n  const handleTouchStart = useCallback((e: React.TouchEvent) => {\n    if (!isMobile) return;\n    \n    const touch = e.touches[0];\n    dragStartY.current = touch.clientY;\n    sheetHeight.current = sheetRef.current?.offsetHeight || 0;\n    setIsDragging(true);\n  }, [isMobile]);\n\n  const handleTouchMove = useCallback((e: React.TouchEvent) => {\n    if (!isDragging || !isMobile) return;\n    \n    const touch = e.touches[0];\n    const deltaY = Math.max(0, touch.clientY - dragStartY.current);\n    setDragY(deltaY);\n  }, [isDragging, isMobile]);\n\n  const handleTouchEnd = useCallback(() => {\n    if (!isDragging) return;\n    \n    setIsDragging(false);\n    \n    // Close if dragged down more than 1/3 of sheet height\n    if (dragY > sheetHeight.current / 3) {\n      onClose();\n    } else {\n      setDragY(0);\n    }\n  }, [isDragging, dragY, onClose]);\n\n  // Reset drag state when sheet closes\n  useEffect(() => {\n    if (!isOpen) {\n      setDragY(0);\n      setIsDragging(false);\n    }\n  }, [isOpen]);\n\n  if (!isMobile) {\n    // Desktop: render as dialog\n    return (\n      <AnimatePresence>\n        {isOpen && (\n          <>\n            <motion.div\n              initial={{ opacity: 0 }}\n              animate={{ opacity: 1 }}\n              exit={{ opacity: 0 }}\n              className=\"fixed inset-0 bg-black/50 backdrop-blur-sm z-50\"\n              onClick={dismissOnBackdrop ? onClose : undefined}\n            />\n            <motion.div\n              initial={{ opacity: 0, scale: 0.95, y: 20 }}\n              animate={{ opacity: 1, scale: 1, y: 0 }}\n              exit={{ opacity: 0, scale: 0.95, y: 20 }}\n              transition={springPresets.gentle}\n              className=\"fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50\"\n            >\n              <Card className=\"w-full max-w-lg max-h-[80vh] overflow-hidden glass-elevated\">\n                <div className=\"flex items-center justify-between p-4 border-b\">\n                  <h2 className=\"text-lg font-semibold\">{title}</h2>\n                  <Button variant=\"ghost\" size=\"sm\" onClick={onClose}>\n                    <X className=\"w-4 h-4\" />\n                  </Button>\n                </div>\n                <div className=\"overflow-auto max-h-[60vh]\">\n                  {children}\n                </div>\n              </Card>\n            </motion.div>\n          </>\n        )}\n      </AnimatePresence>\n    );\n  }\n\n  // Mobile: render as bottom sheet\n  return (\n    <AnimatePresence>\n      {isOpen && (\n        <>\n          {/* Backdrop */}\n          <motion.div\n            initial={{ opacity: 0 }}\n            animate={{ opacity: 1 }}\n            exit={{ opacity: 0 }}\n            className=\"fixed inset-0 bg-black/50 backdrop-blur-sm z-50\"\n            onClick={dismissOnBackdrop ? onClose : undefined}\n          />\n          \n          {/* Bottom Sheet */}\n          <motion.div\n            ref={sheetRef}\n            initial={{ y: '100%' }}\n            animate={{ \n              y: isDragging ? dragY : 0\n            }}\n            exit={{ y: '100%' }}\n            transition={isDragging ? { duration: 0 } : springPresets.gentle}\n            className=\"fixed bottom-0 left-0 right-0 z-50\"\n            style={{ maxHeight }}\n            onTouchStart={handleTouchStart}\n            onTouchMove={handleTouchMove}\n            onTouchEnd={handleTouchEnd}\n          >\n            <Card className=\"h-full rounded-t-3xl rounded-b-none glass-elevated border-t border-x border-b-0\">\n              {/* Drag Handle */}\n              <div className=\"flex justify-center py-3\" ref={elementRef}>\n                <div className=\"w-10 h-1 bg-muted-foreground/30 rounded-full\" />\n              </div>\n              \n              {/* Header */}\n              <div className=\"flex items-center justify-between px-4 pb-4\">\n                <h2 className=\"text-lg font-semibold\">{title}</h2>\n                <Button variant=\"ghost\" size=\"sm\" onClick={onClose}>\n                  <X className=\"w-4 h-4\" />\n                </Button>\n              </div>\n              \n              {/* Content */}\n              <div className=\"overflow-auto flex-1 px-4 pb-4\">\n                {children}\n              </div>\n            </Card>\n          </motion.div>\n        </>\n      )}\n    </AnimatePresence>\n  );\n});\n\nBottomSheet.displayName = 'BottomSheet';\n\n// Quick Note Creation Component\ninterface QuickNoteProps {\n  isOpen: boolean;\n  onClose: () => void;\n  onSave: (note: { title: string; content: string; tags: string[]; attachments: File[] }) => void;\n}\n\nexport const QuickNoteCreator = memo<QuickNoteProps>(({ isOpen, onClose, onSave }) => {\n  const [title, setTitle] = useState('');\n  const [content, setContent] = useState('');\n  const [tags, setTags] = useState<string[]>([]);\n  const [attachments, setAttachments] = useState<File[]>([]);\n  const [isRecording, setIsRecording] = useState(false);\n  const [isSaving, setIsSaving] = useState(false);\n  const [currentLocation, setCurrentLocation] = useState<string | null>(null);\n  \n  const { \n    captureImage, \n    openFilePicker, \n    getCurrentLocation, \n    shareContent, \n    vibrate \n  } = useNativeFeatures();\n  const { queueAction, isOnline } = useOffline();\n\n  // Clear form when sheet closes\n  useEffect(() => {\n    if (!isOpen) {\n      setTitle('');\n      setContent('');\n      setTags([]);\n      setAttachments([]);\n      setCurrentLocation(null);\n    }\n  }, [isOpen]);\n\n  const handleSave = async () => {\n    if (!title.trim() && !content.trim()) return;\n    \n    setIsSaving(true);\n    vibrate(50);\n    \n    try {\n      const noteData = {\n        title: title.trim() || 'Untitled Note',\n        content: content.trim(),\n        tags,\n        attachments\n      };\n      \n      if (isOnline) {\n        await onSave(noteData);\n      } else {\n        queueAction('create-note', noteData);\n        onSave(noteData); // Optimistic update\n      }\n      \n      onClose();\n    } catch (error) {\n      console.error('Failed to save note:', error);\n      vibrate([100, 50, 100]); // Error pattern\n    } finally {\n      setIsSaving(false);\n    }\n  };\n\n  const handleCameraCapture = async () => {\n    const imageData = await captureImage();\n    if (imageData) {\n      // Convert data URL to File\n      const response = await fetch(imageData);\n      const blob = await response.blob();\n      const file = new File([blob], `camera-${Date.now()}.jpg`, { type: 'image/jpeg' });\n      setAttachments(prev => [...prev, file]);\n      vibrate(30);\n    }\n  };\n\n  const handleFileUpload = async () => {\n    const files = await openFilePicker('image/*,application/pdf,.txt,.md', true);\n    setAttachments(prev => [...prev, ...files]);\n    if (files.length > 0) vibrate(30);\n  };\n\n  const handleLocationAdd = async () => {\n    const position = await getCurrentLocation();\n    if (position) {\n      const { latitude, longitude } = position.coords;\n      setCurrentLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);\n      vibrate(30);\n    }\n  };\n\n  const handleShare = async () => {\n    const shareData = {\n      title: title || 'Quick Note',\n      text: content,\n      url: window.location.href\n    };\n    \n    const shared = await shareContent(shareData);\n    if (shared) {\n      vibrate(50);\n    }\n  };\n\n  const addTag = (tag: string) => {\n    if (tag.trim() && !tags.includes(tag.trim())) {\n      setTags(prev => [...prev, tag.trim()]);\n    }\n  };\n\n  const removeTag = (tagToRemove: string) => {\n    setTags(prev => prev.filter(tag => tag !== tagToRemove));\n  };\n\n  const removeAttachment = (index: number) => {\n    setAttachments(prev => prev.filter((_, i) => i !== index));\n  };\n\n  return (\n    <BottomSheet\n      isOpen={isOpen}\n      onClose={onClose}\n      title=\"Quick Note\"\n      maxHeight=\"90vh\"\n    >\n      <div className=\"space-y-4\">\n        {/* Title Input */}\n        <Input\n          placeholder=\"Note title (optional)\"\n          value={title}\n          onChange={(e) => setTitle(e.target.value)}\n          className=\"text-lg font-medium\"\n        />\n        \n        {/* Content Input */}\n        <Textarea\n          placeholder=\"What's on your mind?\"\n          value={content}\n          onChange={(e) => setContent(e.target.value)}\n          className=\"min-h-32 resize-none\"\n          rows={4}\n        />\n        \n        {/* Tags */}\n        <div className=\"space-y-2\">\n          <Input\n            placeholder=\"Add tags (press Enter)\"\n            onKeyDown={(e) => {\n              if (e.key === 'Enter') {\n                e.preventDefault();\n                addTag(e.currentTarget.value);\n                e.currentTarget.value = '';\n              }\n            }}\n          />\n          \n          {tags.length > 0 && (\n            <div className=\"flex flex-wrap gap-2\">\n              {tags.map(tag => (\n                <Badge \n                  key={tag} \n                  variant=\"secondary\" \n                  className=\"cursor-pointer\"\n                  onClick={() => removeTag(tag)}\n                >\n                  {tag} <X className=\"w-3 h-3 ml-1\" />\n                </Badge>\n              ))}\n            </div>\n          )}\n        </div>\n        \n        {/* Attachments */}\n        {attachments.length > 0 && (\n          <div className=\"space-y-2\">\n            <p className=\"text-sm font-medium\">Attachments:</p>\n            <div className=\"space-y-1\">\n              {attachments.map((file, index) => (\n                <div key={index} className=\"flex items-center gap-2 p-2 bg-muted rounded-lg\">\n                  <FileText className=\"w-4 h-4\" />\n                  <span className=\"text-sm flex-1 truncate\">{file.name}</span>\n                  <Button \n                    variant=\"ghost\" \n                    size=\"sm\" \n                    onClick={() => removeAttachment(index)}\n                  >\n                    <X className=\"w-3 h-3\" />\n                  </Button>\n                </div>\n              ))}\n            </div>\n          </div>\n        )}\n        \n        {/* Location */}\n        {currentLocation && (\n          <div className=\"flex items-center gap-2 p-2 bg-muted rounded-lg\">\n            <MapPin className=\"w-4 h-4\" />\n            <span className=\"text-sm\">{currentLocation}</span>\n            <Button \n              variant=\"ghost\" \n              size=\"sm\" \n              onClick={() => setCurrentLocation(null)}\n            >\n              <X className=\"w-3 h-3\" />\n            </Button>\n          </div>\n        )}\n        \n        {/* Action Buttons */}\n        <div className=\"grid grid-cols-4 gap-2\">\n          <Button variant=\"outline\" size=\"sm\" onClick={handleCameraCapture}>\n            <Camera className=\"w-4 h-4\" />\n          </Button>\n          \n          <Button variant=\"outline\" size=\"sm\" onClick={handleFileUpload}>\n            <Upload className=\"w-4 h-4\" />\n          </Button>\n          \n          <Button variant=\"outline\" size=\"sm\" onClick={handleLocationAdd}>\n            <MapPin className=\"w-4 h-4\" />\n          </Button>\n          \n          <Button variant=\"outline\" size=\"sm\" onClick={handleShare}>\n            <Share className=\"w-4 h-4\" />\n          </Button>\n        </div>\n        \n        {/* Save Button */}\n        <div className=\"flex gap-2 pt-4\">\n          <Button \n            variant=\"outline\" \n            onClick={onClose}\n            className=\"flex-1\"\n          >\n            Cancel\n          </Button>\n          \n          <Button \n            onClick={handleSave}\n            disabled={isSaving || (!title.trim() && !content.trim())}\n            className=\"flex-1\"\n          >\n            {isSaving ? (\n              <Loader2 className=\"w-4 h-4 animate-spin mr-2\" />\n            ) : (\n              <Save className=\"w-4 h-4 mr-2\" />\n            )}\n            Save Note\n          </Button>\n        </div>\n      </div>\n    </BottomSheet>\n  );\n});\n\nQuickNoteCreator.displayName = 'QuickNoteCreator';
+import { memo, useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { useMobileGestures } from '@/hooks/use-mobile-gestures';
+import { useNativeFeatures } from '@/hooks/use-native-features';
+import { useOffline } from '@/hooks/use-offline';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { springPresets } from '@/hooks/use-motion';
+import { cn } from '@/lib/utils';
+import { 
+  X, 
+  Check,
+  Camera,
+  Microphone,
+  Image,
+  MapPin,
+  Share,
+  Save,
+  Loader2,
+  Upload,
+  FileText
+} from '@phosphor-icons/react';
+
+interface BottomSheetProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+  maxHeight?: string;
+  dismissOnBackdrop?: boolean;
+}
+
+export const BottomSheet = memo<BottomSheetProps>(({ 
+  isOpen, 
+  onClose, 
+  title, 
+  children,
+  maxHeight = '80vh',
+  dismissOnBackdrop = true
+}) => {
+  const isMobile = useIsMobile();
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragY, setDragY] = useState(0);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const dragStartY = useRef(0);
+  const sheetHeight = useRef(0);
+
+  const { elementRef } = useMobileGestures({
+    onSwipe: (gesture) => {
+      if (gesture.direction === 'down' && gesture.distance > 100) {
+        onClose();
+      }
+    }
+  });
+
+  // Handle drag to dismiss
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!isMobile) return;
+    
+    const touch = e.touches[0];
+    dragStartY.current = touch.clientY;
+    sheetHeight.current = sheetRef.current?.offsetHeight || 0;
+    setIsDragging(true);
+  }, [isMobile]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging || !isMobile) return;
+    
+    const touch = e.touches[0];
+    const deltaY = Math.max(0, touch.clientY - dragStartY.current);
+    setDragY(deltaY);
+  }, [isDragging, isMobile]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!isDragging) return;
+    
+    setIsDragging(false);
+    
+    // Close if dragged down more than 1/3 of sheet height
+    if (dragY > sheetHeight.current / 3) {
+      onClose();
+    } else {
+      setDragY(0);
+    }
+  }, [isDragging, dragY, onClose]);
+
+  // Reset drag state when sheet closes
+  useEffect(() => {
+    if (!isOpen) {
+      setDragY(0);
+      setIsDragging(false);
+    }
+  }, [isOpen]);
+
+  if (!isMobile) {
+    // Desktop: render as dialog
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              onClick={dismissOnBackdrop ? onClose : undefined}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={springPresets.gentle}
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+            >
+              <Card className="w-full max-w-lg max-h-[80vh] overflow-hidden glass-elevated">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <h2 className="text-lg font-semibold">{title}</h2>
+                  <Button variant="ghost" size="sm" onClick={onClose}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="overflow-auto max-h-[60vh]">
+                  {children}
+                </div>
+              </Card>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    );
+  }
+
+  // Mobile: render as bottom sheet
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            onClick={dismissOnBackdrop ? onClose : undefined}
+          />
+          
+          {/* Bottom Sheet */}
+          <motion.div
+            ref={sheetRef}
+            initial={{ y: '100%' }}
+            animate={{ 
+              y: isDragging ? dragY : 0
+            }}
+            exit={{ y: '100%' }}
+            transition={isDragging ? { duration: 0 } : springPresets.gentle}
+            className="fixed bottom-0 left-0 right-0 z-50"
+            style={{ maxHeight }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <Card className="h-full rounded-t-3xl rounded-b-none glass-elevated border-t border-x border-b-0">
+              {/* Drag Handle */}
+              <div className="flex justify-center py-3" ref={elementRef}>
+                <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
+              </div>
+              
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 pb-4">
+                <h2 className="text-lg font-semibold">{title}</h2>
+                <Button variant="ghost" size="sm" onClick={onClose}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              {/* Content */}
+              <div className="overflow-auto flex-1 px-4 pb-4">
+                {children}
+              </div>
+            </Card>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+});
+
+BottomSheet.displayName = 'BottomSheet';
+
+// Quick Note Creation Component
+interface QuickNoteProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (note: { title: string; content: string; tags: string[]; attachments: File[] }) => void;
+}
+
+export const QuickNoteCreator = memo<QuickNoteProps>(({ isOpen, onClose, onSave }) => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState<string | null>(null);
+  
+  const { 
+    captureImage, 
+    openFilePicker, 
+    getCurrentLocation, 
+    shareContent, 
+    vibrate 
+  } = useNativeFeatures();
+  const { queueAction, isOnline } = useOffline();
+
+  // Clear form when sheet closes
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle('');
+      setContent('');
+      setTags([]);
+      setAttachments([]);
+      setCurrentLocation(null);
+    }
+  }, [isOpen]);
+
+  const handleSave = async () => {
+    if (!title.trim() && !content.trim()) return;
+    
+    setIsSaving(true);
+    vibrate(50);
+    
+    try {
+      const noteData = {
+        title: title.trim() || 'Untitled Note',
+        content: content.trim(),
+        tags,
+        attachments
+      };
+      
+      if (isOnline) {
+        await onSave(noteData);
+      } else {
+        queueAction('create-note', noteData);
+        onSave(noteData); // Optimistic update
+      }
+      
+      onClose();
+    } catch (error) {
+      console.error('Failed to save note:', error);
+      vibrate([100, 50, 100]); // Error pattern
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCameraCapture = async () => {
+    const imageData = await captureImage();
+    if (imageData) {
+      // Convert data URL to File
+      const response = await fetch(imageData);
+      const blob = await response.blob();
+      const file = new File([blob], `camera-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      setAttachments(prev => [...prev, file]);
+      vibrate(30);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    const files = await openFilePicker('image/*,application/pdf,.txt,.md', true);
+    setAttachments(prev => [...prev, ...files]);
+    if (files.length > 0) vibrate(30);
+  };
+
+  const handleLocationAdd = async () => {
+    const position = await getCurrentLocation();
+    if (position) {
+      const { latitude, longitude } = position.coords;
+      setCurrentLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+      vibrate(30);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: title || 'Quick Note',
+      text: content,
+      url: window.location.href
+    };
+    
+    const shared = await shareContent(shareData);
+    if (shared) {
+      vibrate(50);
+    }
+  };
+
+  const addTag = (tag: string) => {
+    if (tag.trim() && !tags.includes(tag.trim())) {
+      setTags(prev => [...prev, tag.trim()]);
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(prev => prev.filter(tag => tag !== tagToRemove));
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  return (
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Quick Note"
+      maxHeight="90vh"
+    >
+      <div className="space-y-4">
+        {/* Title Input */}
+        <Input
+          placeholder="Note title (optional)"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="text-lg font-medium"
+        />
+        
+        {/* Content Input */}
+        <Textarea
+          placeholder="What's on your mind?"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="min-h-32 resize-none"
+          rows={4}
+        />
+        
+        {/* Tags */}
+        <div className="space-y-2">
+          <Input
+            placeholder="Add tags (press Enter)"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag(e.currentTarget.value);
+                e.currentTarget.value = '';
+              }
+            }}
+          />
+          
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {tags.map(tag => (
+                <Badge 
+                  key={tag} 
+                  variant="secondary" 
+                  className="cursor-pointer"
+                  onClick={() => removeTag(tag)}
+                >
+                  {tag} <X className="w-3 h-3 ml-1" />
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {/* Attachments */}
+        {attachments.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Attachments:</p>
+            <div className="space-y-1">
+              {attachments.map((file, index) => (
+                <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded-lg">
+                  <FileText className="w-4 h-4" />
+                  <span className="text-sm flex-1 truncate">{file.name}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => removeAttachment(index)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Location */}
+        {currentLocation && (
+          <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">{currentLocation}</span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setCurrentLocation(null)}
+            >
+              <X className="w-3 h-3" />
+            </Button>
+          </div>
+        )}
+        
+        {/* Action Buttons */}
+        <div className="grid grid-cols-4 gap-2">
+          <Button variant="outline" size="sm" onClick={handleCameraCapture}>
+            <Camera className="w-4 h-4" />
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={handleFileUpload}>
+            <Upload className="w-4 h-4" />
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={handleLocationAdd}>
+            <MapPin className="w-4 h-4" />
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={handleShare}>
+            <Share className="w-4 h-4" />
+          </Button>
+        </div>
+        
+        {/* Save Button */}
+        <div className="flex gap-2 pt-4">
+          <Button 
+            variant="outline" 
+            onClick={onClose}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          
+          <Button 
+            onClick={handleSave}
+            disabled={isSaving || (!title.trim() && !content.trim())}
+            className="flex-1"
+          >
+            {isSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+            ) : (
+              <Save className="w-4 h-4 mr-2" />
+            )}
+            Save Note
+          </Button>
+        </div>
+      </div>
+    </BottomSheet>
+  );
+});
+
+QuickNoteCreator.displayName = 'QuickNoteCreator';
