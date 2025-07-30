@@ -524,8 +524,9 @@ export function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, ...springPresets.gentle }}
             >
-              {/* Mood Distribution */}
-              <AnimatePresence>
+              <>
+                {/* Mood Distribution */}
+                <AnimatePresence>
                 {Object.keys(moodDistribution).length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, x: -40 }}
@@ -643,6 +644,7 @@ export function Dashboard() {
                   </motion.div>
                 )}
               </AnimatePresence>
+              </>
             </motion.div>
           )}
         </div>
@@ -1050,8 +1052,9 @@ export function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, ...springPresets.gentle }}
           >
-            {/* Mood Distribution */}
-            <AnimatePresence>
+            <>
+              {/* Mood Distribution */}
+              <AnimatePresence>
               {Object.keys(moodDistribution).length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, x: -40 }}
@@ -1169,6 +1172,7 @@ export function Dashboard() {
                 </motion.div>
               )}
             </AnimatePresence>
+            </>
           </motion.div>
 
           {/* Favorites Section */}
