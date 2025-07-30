@@ -27,15 +27,21 @@ import { useIsMobile, usePWA } from '@/hooks/use-mobile';
 import { useGestureSupport, useKeyboardNavigation } from '@/hooks/use-accessibility';
 import { useNativeFeatures } from '@/hooks/use-native-features';
 import { useOffline } from '@/hooks/use-offline';
+import { useDemoData } from '@/hooks/use-demo-data';
+import { useAuth } from '@/components/enterprise';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageTransitions, springPresets } from '@/hooks/use-motion';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useCallback } from 'react';
+import { Play, X } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 function App() {
   const { currentView, sidebarCollapsed, focusMode } = useAppState();
   const { addNote } = useNotes();
   const { addTask } = useTasks();
+  const { user } = useAuth();
   const isMobile = useIsMobile();
   const { prefersReducedMotion, getAnimationProps } = useGestureSupport();
   const { isKeyboardUser } = useKeyboardNavigation();
@@ -43,9 +49,26 @@ function App() {
   const { syncPendingActions } = useOffline();
   const { isServiceWorkerReady } = usePWA();
   
+  // Initialize demo data if in demo mode
+  useDemoData();
+  
+  // Demo mode state
+  const isDemoMode = user?.id === 'demo-user';
+  const [showDemoBanner, setShowDemoBanner] = useState(false);
+  
   // Mobile-specific state
   const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Show demo banner for first-time demo users
+  useEffect(() => {
+    if (isDemoMode) {
+      const hasSeenBanner = localStorage.getItem('demo-banner-seen');
+      if (!hasSeenBanner) {
+        setShowDemoBanner(true);
+      }
+    }
+  }, [isDemoMode]);
 
   // Initialize production optimizations
   useEffect(() => {
@@ -182,6 +205,11 @@ function App() {
     }
   }, []);
 
+  const handleDismissBanner = useCallback(() => {
+    setShowDemoBanner(false);
+    localStorage.setItem('demo-banner-seen', 'true');
+  }, []);
+
   const handleSaveNote = useCallback(async (noteData: any) => {
     try {
       const newNote = addNote(noteData);
@@ -254,33 +282,71 @@ function App() {
   return (
     <motion.div 
       className={cn(
-        "h-screen flex bg-background text-foreground overflow-hidden",
+        "h-screen flex flex-col bg-background text-foreground overflow-hidden",
         isKeyboardUser && "keyboard-user" // Add class for keyboard users
       )}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={springPresets.gentle}
     >
-      {/* Offline Status Indicator */}
-      <OfflineIndicator />
+      {/* Demo Mode Banner */}
+      <AnimatePresence>
+        {isDemoMode && showDemoBanner && (
+          <motion.div
+            initial={{ y: -60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -60, opacity: 0 }}
+            transition={springPresets.gentle}
+            className="relative z-50 bg-gradient-to-r from-accent via-primary to-accent/80 text-white px-4 py-3 shadow-lg"
+          >
+            <div className="flex items-center justify-between max-w-4xl mx-auto">
+              <div className="flex items-center gap-3">
+                <Play className="w-5 h-5" />
+                <div>
+                  <span className="font-semibold">Demo Mode Active</span>
+                  <span className="text-white/90 ml-2">
+                    You're exploring Cortex with full functionality and sample data
+                  </span>
+                </div>
+                <Badge variant="outline" className="bg-white/20 border-white/30 text-white">
+                  All Features Unlocked
+                </Badge>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDismissBanner}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Sidebar */}
-      {!isMobile && <Sidebar />}
-      
-      {/* Main Content with Pull-to-Refresh */}
-      {isMobile ? (
-        <PullToRefresh onRefresh={handleRefresh} disabled={refreshing}>
-          {mainContent}
-        </PullToRefresh>
-      ) : (
-        mainContent
-      )}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Offline Status Indicator */}
+        <OfflineIndicator />
 
-      {/* Mobile Navigation (if needed) */}
-      {isMobile && (
-        // Mobile bottom navigation could go here if needed
-        null
-      )}
+        {/* Sidebar */}
+        {!isMobile && <Sidebar />}
+        
+        {/* Main Content with Pull-to-Refresh */}
+        {isMobile ? (
+          <PullToRefresh onRefresh={handleRefresh} disabled={refreshing}>
+            {mainContent}
+          </PullToRefresh>
+        ) : (
+          mainContent
+        )}
+
+        {/* Mobile Navigation (if needed) */}
+        {isMobile && (
+          // Mobile bottom navigation could go here if needed
+          null
+        )}
+      </div>
 
       {/* Floating Action Button */}
       <FloatingActionButton

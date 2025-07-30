@@ -21,7 +21,8 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertCircle,
-  Fingerprint
+  Fingerprint,
+  Play
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -82,6 +83,21 @@ export function EnterpriseLoginForm({ onSuccess }: LoginFormProps) {
     } catch (error) {
       toast.error(`${provider} login failed`, { description: error.message });
     }
+  };
+
+  const handleDemoMode = () => {
+    // Set demo user flag in localStorage for the auth provider to recognize
+    localStorage.setItem('cortex-demo-mode', 'true');
+    
+    // Show success message
+    toast.success('Entering Demo Mode', {
+      description: 'Showcasing all Cortex features without authentication'
+    });
+    
+    // Trigger success callback immediately
+    setTimeout(() => {
+      onSuccess?.();
+    }, 500);
   };
 
   const springTransition = {
@@ -360,6 +376,34 @@ export function EnterpriseLoginForm({ onSuccess }: LoginFormProps) {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            <Separator />
+
+            {/* Demo Mode Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...springTransition, delay: 0.3 }}
+              className="space-y-4"
+            >
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Want to try Cortex first?
+                </p>
+                <Button
+                  onClick={handleDemoMode}
+                  variant="outline"
+                  className="w-full bg-gradient-to-r from-accent/10 to-primary/10 border-accent/30 hover:border-accent/50 transition-all duration-300"
+                  disabled={isLoading}
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Enter Demo Mode
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Explore all features without creating an account
+                </p>
+              </div>
+            </motion.div>
 
             <Separator />
 

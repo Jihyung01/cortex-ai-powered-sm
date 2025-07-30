@@ -24,17 +24,22 @@ import {
   Target,
   Clock,
   Heart,
-  Rocket
+  Rocket,
+  Play
 } from '@phosphor-icons/react';
 import { useAppState } from '@/hooks/use-notes';
 import { useWorkspace } from '@/hooks/use-workspace';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/components/enterprise';
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {
   const { currentView, setCurrentView, sidebarCollapsed, setSidebarCollapsed } = useAppState();
   const { currentWorkspace, hasPermission } = useWorkspace();
+  const { user } = useAuth();
   const isMobile = useIsMobile();
+  
+  const isDemoMode = user?.id === 'demo-user';
 
   const personalItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -136,6 +141,27 @@ export function Sidebar() {
               <span className="text-sm font-medium truncate">{currentWorkspace.name}</span>
             </div>
           </div>
+        )}
+
+        {/* Demo Mode Indicator */}
+        {!sidebarCollapsed && isDemoMode && (
+          <motion.div 
+            className="mt-3 p-2 bg-gradient-to-r from-accent/20 to-primary/20 rounded-lg border border-accent/30"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex items-center gap-2">
+              <Play size={14} className="text-accent" />
+              <span className="text-sm font-medium text-accent">Demo Mode</span>
+              <Badge variant="outline" className="text-xs bg-accent/10 border-accent/30 text-accent">
+                All Features
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Exploring Cortex without authentication
+            </p>
+          </motion.div>
         )}
       </div>
 

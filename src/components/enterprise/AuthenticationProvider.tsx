@@ -62,6 +62,14 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
 
   const initializeAuth = async () => {
     try {
+      // Check for demo mode first
+      const isDemoMode = localStorage.getItem('cortex-demo-mode') === 'true';
+      
+      if (isDemoMode) {
+        await activateDemoMode();
+        return;
+      }
+
       if (sessionData?.token && sessionData?.expiresAt > Date.now()) {
         await validateSession(sessionData.token);
       } else {
@@ -71,6 +79,46 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       console.error('Auth initialization failed:', error);
       await logout();
     }
+  };
+
+  const activateDemoMode = async () => {
+    const demoUser: User = {
+      id: 'demo-user',
+      email: 'demo@cortex.ai',
+      name: 'Demo User',
+      avatar: '🚀',
+      role: 'admin', // Give full access in demo mode
+      permissions: [
+        'read:notes', 'write:notes', 'delete:notes',
+        'read:tasks', 'write:tasks', 'delete:tasks',
+        'read:analytics', 'write:analytics',
+        'read:team', 'write:team',
+        'read:projects', 'write:projects',
+        'admin:all'
+      ],
+      mfaEnabled: false,
+      lastLoginAt: new Date(),
+      createdAt: new Date()
+    };
+
+    setAuthState({
+      user: demoUser,
+      isAuthenticated: true,
+      isLoading: false,
+      permissions: demoUser.permissions
+    });
+
+    // Set demo session data
+    await setSessionData({
+      token: 'demo-token',
+      expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+      userId: demoUser.id
+    });
+
+    await logAuditEvent('demo_mode_activated', {
+      userId: demoUser.id,
+      timestamp: new Date().toISOString()
+    });
   };
 
   const validateSession = async (token: string) => {
@@ -172,6 +220,9 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       const userId = authState.user?.id;
+      
+      // Clear demo mode flag
+      localStorage.removeItem('cortex-demo-mode');
       
       // Clear session data
       await setSessionData(null);
@@ -356,10 +407,14 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       console.log('Audit Log:', auditLog);
       
       // Store locally for demo (in production, don't store sensitive audit logs locally)
-      const [existingLogs, setAuditLogs] = await spark.kv.get('audit-logs') || [[], () => {}];
-      if (Array.isArray(existingLogs)) {
-        const updatedLogs = [...existingLogs.slice(-999), auditLog]; // Keep last 1000 logs
-        await spark.kv.set('audit-logs', updatedLogs);
+      try {
+        const existingLogs = await spark.kv.get('audit-logs') || [];
+        if (Array.isArray(existingLogs)) {
+          const updatedLogs = [...existingLogs.slice(-999), auditLog]; // Keep last 1000 logs
+          await spark.kv.set('audit-logs', updatedLogs);
+        }
+      } catch (kvError) {
+        console.warn('Could not store audit log:', kvError);
       }
     } catch (error) {
       console.error('Audit logging failed:', error);
