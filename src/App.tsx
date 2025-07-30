@@ -28,7 +28,6 @@ import { useGestureSupport, useKeyboardNavigation } from '@/hooks/use-accessibil
 import { useNativeFeatures } from '@/hooks/use-native-features';
 import { useOffline } from '@/hooks/use-offline';
 import { useDemoData } from '@/hooks/use-demo-data';
-import { useAuth } from '@/components/enterprise';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageTransitions, springPresets } from '@/hooks/use-motion';
 import { cn } from '@/lib/utils';
