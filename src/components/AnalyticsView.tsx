@@ -10,7 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { 
   ChartBarIcon, 
   CalendarDaysIcon, 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   ExclamationTriangleIcon,
   DocumentArrowDownIcon,
   ArrowPathIcon,
@@ -243,7 +243,7 @@ export function AnalyticsView() {
               Overview
             </TabsTrigger>
             <TabsTrigger value="insights" className="flex items-center gap-2">
-              <TrendingUpIcon className="w-4 h-4" />
+              <ArrowTrendingUpIcon className="w-4 h-4" />
               AI Insights
             </TabsTrigger>
             <TabsTrigger value="reports" className="flex items-center gap-2">
@@ -282,7 +282,7 @@ export function AnalyticsView() {
                   <Card className="glass-card card-3d">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <TrendingUpIcon className="w-5 h-5 text-primary" />
+                        <ArrowTrendingUpIcon className="w-5 h-5 text-primary" />
                         Productivity Trends
                       </CardTitle>
                     </CardHeader>

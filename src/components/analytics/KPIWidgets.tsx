@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
-  TrendingUpIcon, 
-  TrendingDownIcon, 
+  ArrowTrendingUpIcon, 
+  ArrowTrendingDownIcon, 
   ClockIcon, 
   CheckCircleIcon,
   UsersIcon,
@@ -95,7 +95,7 @@ export function KPIWidgets({ data, timeRange }: KPIWidgetsProps) {
         value: '87%',
         change: 3.2,
         trend: 'up',
-        icon: TrendingUpIcon,
+        icon: ArrowTrendingUpIcon,
         color: 'text-emerald-600',
         target: 90,
         unit: '%'
@@ -132,8 +132,8 @@ export function KPIWidgets({ data, timeRange }: KPIWidgetsProps) {
                   variant={metric.trend === 'up' ? 'default' : metric.trend === 'down' ? 'destructive' : 'secondary'}
                   className="text-xs"
                 >
-                  {metric.trend === 'up' && <TrendingUpIcon className="w-3 h-3 mr-1" />}
-                  {metric.trend === 'down' && <TrendingDownIcon className="w-3 h-3 mr-1" />}
+                  {metric.trend === 'up' && <ArrowTrendingUpIcon className="w-3 h-3 mr-1" />}
+                  {metric.trend === 'down' && <ArrowTrendingDownIcon className="w-3 h-3 mr-1" />}
                   {Math.abs(metric.change)}%
                 </Badge>
               </div>

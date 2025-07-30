@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   LightBulbIcon, 
   ExclamationTriangleIcon, 
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   ClockIcon,
   FireIcon,
   ShieldCheckIcon,
@@ -147,7 +147,7 @@ export function InsightsPanel({ data, timeRange }: InsightsPanelProps) {
 
   const getInsightIcon = (type: AIInsight['type']) => {
     switch (type) {
-      case 'productivity': return TrendingUpIcon;
+      case 'productivity': return ArrowTrendingUpIcon;
       case 'burnout': return ExclamationTriangleIcon;
       case 'optimization': return CpuChipIcon;
       case 'pattern': return LightBulbIcon;

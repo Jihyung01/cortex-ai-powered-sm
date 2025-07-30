@@ -11,8 +11,8 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   SparklesIcon,
   BeakerIcon
 } from '@heroicons/react/24/outline';
@@ -239,7 +239,7 @@ export function PredictiveAnalytics({ data, timeRange }: PredictiveAnalyticsProp
   const getPredictionIcon = (type: Prediction['type']) => {
     switch (type) {
       case 'completion': return CheckCircleIcon;
-      case 'performance': return TrendingUpIcon;
+      case 'performance': return ArrowTrendingUpIcon;
       case 'risk': return ExclamationTriangleIcon;
       case 'opportunity': return SparklesIcon;
       default: return ChartBarIcon;
@@ -300,7 +300,7 @@ export function PredictiveAnalytics({ data, timeRange }: PredictiveAnalyticsProp
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUpIcon className="w-5 h-5 text-blue-500" />
+                <ArrowTrendingUpIcon className="w-5 h-5 text-blue-500" />
                 Productivity Forecast
               </CardTitle>
             </CardHeader>
@@ -472,8 +472,8 @@ export function PredictiveAnalytics({ data, timeRange }: PredictiveAnalyticsProp
                             </div>
                             <div className="flex items-center gap-1">
                               {prediction.probability > 70 ? 
-                                <TrendingUpIcon className="w-3 h-3 text-green-500" /> :
-                                <TrendingDownIcon className="w-3 h-3 text-red-500" />
+                                <ArrowTrendingUpIcon className="w-3 h-3 text-green-500" /> :
+                                <ArrowTrendingDownIcon className="w-3 h-3 text-red-500" />
                               }
                               {prediction.probability}% probability
                             </div>
