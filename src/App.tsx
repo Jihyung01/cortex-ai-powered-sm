@@ -14,11 +14,16 @@ import { SmartNotifications } from '@/components/SmartNotifications';
 import { AIAssistantFAB } from '@/components/AIAssistantFAB';
 import { useAppState } from '@/hooks/use-notes';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useGestureSupport, useKeyboardNavigation } from '@/hooks/use-accessibility';
+import { motion, AnimatePresence } from 'framer-motion';
+import { pageTransitions, springPresets } from '@/hooks/use-motion';
 import { cn } from '@/lib/utils';
 
 function App() {
   const { currentView, sidebarCollapsed, focusMode } = useAppState();
   const isMobile = useIsMobile();
+  const { prefersReducedMotion, getAnimationProps } = useGestureSupport();
+  const { isKeyboardUser } = useKeyboardNavigation();
 
   const renderCurrentView = () => {
     switch (currentView) {
@@ -48,21 +53,44 @@ function App() {
   };
 
   if (focusMode) {
-    return <FocusMode />;
+    return (
+      <motion.div
+        {...getAnimationProps(pageTransitions)}
+        className="h-screen"
+      >
+        <FocusMode />
+      </motion.div>
+    );
   }
 
   return (
-    <div className="h-screen flex bg-background text-foreground overflow-hidden">
+    <motion.div 
+      className={cn(
+        "h-screen flex bg-background text-foreground overflow-hidden",
+        isKeyboardUser && "keyboard-user" // Add class for keyboard users
+      )}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={springPresets.gentle}
+    >
       {/* Sidebar */}
       <Sidebar />
       
       {/* Main Content */}
       <main className={cn(
-        "flex-1 overflow-hidden transition-all duration-300 ease-in-out",
+        "flex-1 overflow-hidden transition-all duration-500 ease-out",
         !isMobile && !sidebarCollapsed && "ml-0",
         !isMobile && sidebarCollapsed && "ml-0"
       )}>
-        {renderCurrentView()}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentView}
+            {...getAnimationProps(pageTransitions)}
+            className="h-full"
+          >
+            {renderCurrentView()}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Toast Notifications */}
@@ -70,6 +98,7 @@ function App() {
         position="top-right"
         richColors
         closeButton
+        className="glassmorphism-toaster"
       />
 
       {/* Smart AI Notifications */}
@@ -77,7 +106,15 @@ function App() {
 
       {/* AI Assistant FAB */}
       <AIAssistantFAB />
-    </div>
+      
+      {/* Accessibility: Skip to main content */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-primary text-primary-foreground px-4 py-2 rounded-md"
+      >
+        Skip to main content
+      </a>
+    </motion.div>
   );
 }
 
