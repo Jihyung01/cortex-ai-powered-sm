@@ -12,7 +12,6 @@ import {
   AuthenticationProvider, 
   MonetizationProvider,
   EnterpriseLoginForm,
-  InteractiveOnboarding,
   useAuth,
   useMonetization
 } from '@/components/enterprise';
@@ -37,7 +36,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 function App() {
-  const { currentView, sidebarCollapsed, focusMode } = useAppState();
+  const { currentView, sidebarCollapsed, focusMode, setCurrentView } = useAppState();
   const { addNote } = useNotes();
   const { addTask } = useTasks();
   const { user } = useAuth();
@@ -69,7 +68,7 @@ function App() {
     }
   }, [isDemoMode]);
 
-  // Initialize production optimizations
+  // Initialize production optimizations and handle URL routing
   useEffect(() => {
     const initializeApp = async () => {
       try {
@@ -79,6 +78,39 @@ function App() {
         // Preload critical components
         preloadCriticalComponents();
         
+        // Handle URL-based routing
+        const handleURLRouting = () => {
+          const hash = window.location.hash.slice(1); // Remove #
+          const urlParams = new URLSearchParams(window.location.search);
+          const viewParam = urlParams.get('view');
+          
+          // Determine target view from URL
+          let targetView = 'dashboard'; // Default to dashboard
+          
+          if (hash && hash !== '' && hash !== 'dashboard') {
+            targetView = hash;
+          } else if (viewParam && viewParam !== '') {
+            targetView = viewParam;
+          }
+          
+          // Update current view if needed
+          if (targetView !== currentView) {
+            try {
+              // Update the view using setCurrentView
+              setCurrentView(targetView as any);
+            } catch (error) {
+              console.warn('Could not update view from URL:', error);
+            }
+          }
+        };
+        
+        // Handle initial URL
+        handleURLRouting();
+        
+        // Listen for URL changes
+        window.addEventListener('hashchange', handleURLRouting);
+        window.addEventListener('popstate', handleURLRouting);
+        
         // App initialized successfully
       } catch (error) {
         console.error('Failed to initialize app optimizations:', error);
@@ -86,7 +118,24 @@ function App() {
     };
     
     initializeApp();
-  }, []);
+    
+    // Cleanup event listeners
+    return () => {
+      window.removeEventListener('hashchange', () => {});
+      window.removeEventListener('popstate', () => {});
+    };
+  }, [currentView]);
+
+  // Sync URL with current view
+  useEffect(() => {
+    // Update URL when view changes (without triggering a page reload)
+    if (currentView && currentView !== 'dashboard') {
+      window.history.replaceState(null, '', `#${currentView}`);
+    } else {
+      // Clear hash for dashboard view
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, [currentView]);
 
   // Setup PWA features
   useEffect(() => {
@@ -403,20 +452,8 @@ function EnhancedApp() {
 // App component that handles authentication state
 function AppWithAuth() {
   const { isAuthenticated, isLoading } = useAuth();
-  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  useEffect(() => {
-    // Check if user needs onboarding
-    const hasCompletedOnboarding = localStorage.getItem('cortex-onboarding-completed');
-    if (isAuthenticated && !hasCompletedOnboarding) {
-      setShowOnboarding(true);
-    }
-  }, [isAuthenticated]);
-
-  const handleOnboardingComplete = () => {
-    localStorage.setItem('cortex-onboarding-completed', 'true');
-    setShowOnboarding(false);
-  };
+  // Skip onboarding completely - go directly to dashboard
 
   if (isLoading) {
     return (
@@ -428,17 +465,16 @@ function AppWithAuth() {
 
   if (!isAuthenticated) {
     return <EnterpriseLoginForm onSuccess={() => {
-      // Small delay to allow auth state to update
+      // Small delay to allow auth state to update, then go to dashboard
       setTimeout(() => {
+        // Force the app to refresh and load with dashboard view
+        window.location.hash = ''; // Clear any existing hash
         window.location.reload();
       }, 100);
     }} />;
   }
 
-  if (showOnboarding) {
-    return <InteractiveOnboarding onComplete={handleOnboardingComplete} />;
-  }
-
+  // Always go directly to main app (dashboard)
   return <App />;
 }
 

@@ -120,6 +120,18 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       userId: demoUser.id
     });
 
+    // Ensure we start at dashboard view
+    try {
+      await spark.kv.set('cortex-current-view', 'dashboard');
+      // Clear any onboarding flags
+      localStorage.removeItem('cortex-onboarding-completed');
+      // Clear any tutorial or setup flags
+      localStorage.removeItem('tutorial-completed');
+      localStorage.removeItem('setup-completed');
+    } catch (error) {
+      console.warn('Could not set initial view state:', error);
+    }
+
     await logAuditEvent('demo_mode_activated', {
       userId: demoUser.id,
       timestamp: new Date().toISOString()
@@ -190,6 +202,17 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
         isLoading: false,
         permissions: response.user.permissions
       });
+
+      // Ensure we start at dashboard view for all logins
+      try {
+        await spark.kv.set('cortex-current-view', 'dashboard');
+        // Clear any onboarding flags
+        localStorage.removeItem('cortex-onboarding-completed');
+        localStorage.removeItem('tutorial-completed');
+        localStorage.removeItem('setup-completed');
+      } catch (error) {
+        console.warn('Could not set initial view state:', error);
+      }
 
       // Log successful login
       await logAuditEvent('user_login', {
@@ -366,6 +389,11 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       setTimeout(() => {
         // Test account for demo purposes
         if (credentials.email === 'demo@cortex.com' && credentials.password === 'demo123') {
+          // Clear any onboarding flags for test account too
+          localStorage.removeItem('cortex-onboarding-completed');
+          localStorage.removeItem('tutorial-completed');
+          localStorage.removeItem('setup-completed');
+          
           resolve({
             user: {
               id: 'test-user-demo',

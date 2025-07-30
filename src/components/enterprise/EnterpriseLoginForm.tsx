@@ -90,9 +90,14 @@ export function EnterpriseLoginForm({ onSuccess }: LoginFormProps) {
       // Set demo user flag in localStorage for the auth provider to recognize
       localStorage.setItem('cortex-demo-mode', 'true');
       
+      // Clear any onboarding or tutorial flags
+      localStorage.removeItem('cortex-onboarding-completed');
+      localStorage.removeItem('tutorial-completed');
+      localStorage.removeItem('setup-completed');
+      
       // Show success message
       toast.success('Entering Demo Mode', {
-        description: 'Showcasing all Cortex features without authentication'
+        description: 'Loading Cortex dashboard with full functionality'
       });
       
       // Force a reload to trigger auth provider initialization with demo mode
