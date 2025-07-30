@@ -12,9 +12,16 @@ import {
   FileText,
   Template,
   Menu,
-  X
+  X,
+  CheckSquare,
+  Kanban,
+  CalendarBlank,
+  ChartLine,
+  Timer,
+  Columns
 } from '@phosphor-icons/react';
 import { useNotes, useAppState } from '@/hooks/use-notes';
+import { useTasks } from '@/hooks/use-tasks';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
@@ -28,13 +35,19 @@ export function Sidebar({ className }: SidebarProps) {
     setCurrentView, 
     sidebarCollapsed, 
     setSidebarCollapsed,
-    setIsCreatingNote 
+    setIsCreatingNote,
+    setIsCreatingTask,
+    focusMode
   } = useAppState();
   const { notes, folders, getFavoriteNotes, getRecentNotes } = useNotes();
+  const { tasks, getOverdueTasks, getUpcomingTasks } = useTasks();
   const isMobile = useIsMobile();
 
   const favoriteNotes = getFavoriteNotes();
   const recentNotes = getRecentNotes(5);
+  const overdueTasks = getOverdueTasks();
+  const upcomingTasks = getUpcomingTasks();
+  const activeTasks = tasks.filter(task => task.status === 'in-progress');
 
   const navigationItems = [
     {
@@ -42,7 +55,7 @@ export function Sidebar({ className }: SidebarProps) {
       label: 'Dashboard',
       icon: Brain,
       view: 'dashboard' as const,
-      count: notes.length
+      count: notes.length + tasks.length
     },
     {
       id: 'notes',
@@ -72,9 +85,51 @@ export function Sidebar({ className }: SidebarProps) {
     }
   ];
 
+  const taskNavigationItems = [
+    {
+      id: 'tasks',
+      label: 'All Tasks',
+      icon: CheckSquare,
+      view: 'tasks' as const,
+      count: tasks.filter(task => task.status !== 'done').length,
+      urgent: overdueTasks.length
+    },
+    {
+      id: 'kanban',
+      label: 'Kanban Board',
+      icon: Kanban,
+      view: 'kanban' as const,
+      count: activeTasks.length
+    },
+    {
+      id: 'timeline',
+      label: 'Timeline',
+      icon: Columns,
+      view: 'timeline' as const
+    },
+    {
+      id: 'calendar',
+      label: 'Calendar',
+      icon: CalendarBlank,
+      view: 'calendar' as const,
+      count: upcomingTasks.length
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: ChartLine,
+      view: 'analytics' as const
+    }
+  ];
+
   const handleNewNote = () => {
     setIsCreatingNote(true);
     setCurrentView('notes');
+  };
+
+  const handleNewTask = () => {
+    setIsCreatingTask(true);
+    setCurrentView('tasks');
   };
 
   if (isMobile && sidebarCollapsed) {
@@ -130,8 +185,8 @@ export function Sidebar({ className }: SidebarProps) {
           </div>
         </div>
 
-        {/* New Note Button */}
-        <div className="p-4">
+        {/* Action Buttons */}
+        <div className="p-4 space-y-2">
           <Button
             onClick={handleNewNote}
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -140,34 +195,94 @@ export function Sidebar({ className }: SidebarProps) {
             <Plus size={20} />
             {!sidebarCollapsed && <span className="ml-2">New Note</span>}
           </Button>
+          
+          <Button
+            onClick={handleNewTask}
+            variant="outline"
+            className={cn(
+              "w-full",
+              sidebarCollapsed ? "px-0" : ""
+            )}
+            size={sidebarCollapsed ? "icon" : "default"}
+          >
+            <CheckSquare size={20} />
+            {!sidebarCollapsed && <span className="ml-2">New Task</span>}
+          </Button>
         </div>
 
         {/* Navigation */}
         <ScrollArea className="flex-1 px-4">
-          <div className="space-y-2">
-            {navigationItems.map((item) => (
-              <Button
-                key={item.id}
-                variant={currentView === item.view ? "secondary" : "ghost"}
-                className={cn(
-                  "w-full justify-start text-left",
-                  sidebarCollapsed && "justify-center"
-                )}
-                onClick={() => setCurrentView(item.view)}
-              >
-                <item.icon size={20} />
-                {!sidebarCollapsed && (
-                  <>
-                    <span className="ml-3">{item.label}</span>
-                    {item.count !== undefined && (
-                      <Badge variant="secondary" className="ml-auto">
-                        {item.count}
-                      </Badge>
-                    )}
-                  </>
-                )}
-              </Button>
-            ))}
+          <div className="space-y-6">
+            {/* Notes Section */}
+            <div className="space-y-2">
+              {!sidebarCollapsed && (
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+                  Notes
+                </h3>
+              )}
+              {navigationItems.map((item) => (
+                <Button
+                  key={item.id}
+                  variant={currentView === item.view ? "secondary" : "ghost"}
+                  className={cn(
+                    "w-full justify-start text-left",
+                    sidebarCollapsed && "justify-center"
+                  )}
+                  onClick={() => setCurrentView(item.view)}
+                >
+                  <item.icon size={20} />
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="ml-3">{item.label}</span>
+                      {item.count !== undefined && (
+                        <Badge variant="secondary" className="ml-auto">
+                          {item.count}
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </Button>
+              ))}
+            </div>
+
+            {/* Tasks Section */}
+            <div className="space-y-2">
+              {!sidebarCollapsed && (
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+                  Tasks
+                </h3>
+              )}
+              {taskNavigationItems.map((item) => (
+                <Button
+                  key={item.id}
+                  variant={currentView === item.view ? "secondary" : "ghost"}
+                  className={cn(
+                    "w-full justify-start text-left",
+                    sidebarCollapsed && "justify-center"
+                  )}
+                  onClick={() => setCurrentView(item.view)}
+                >
+                  <item.icon size={20} />
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="ml-3">{item.label}</span>
+                      <div className="ml-auto flex items-center gap-1">
+                        {item.urgent && item.urgent > 0 && (
+                          <Badge variant="destructive" className="text-xs">
+                            {item.urgent}
+                          </Badge>
+                        )}
+                        {item.count !== undefined && (
+                          <Badge variant="secondary">
+                            {item.count}
+                          </Badge>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {!sidebarCollapsed && (

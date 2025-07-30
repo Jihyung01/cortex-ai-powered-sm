@@ -1,0 +1,127 @@
+# Cortex - AI-Powered Note-Taking & Task Management App
+
+## Core Purpose & Success
+
+**Mission Statement**: Cortex is an intelligent productivity platform that seamlessly integrates advanced note-taking with sophisticated task management, powered by AI to enhance cognitive performance and organizational efficiency.
+
+**Success Indicators**: 
+- High user engagement with both notes and tasks features
+- Increased productivity metrics through AI insights
+- Seamless workflow between note-taking and task execution
+- Positive user feedback on AI-powered features
+
+**Experience Qualities**: Intelligent, Seamless, Empowering
+
+## Project Classification & Approach
+
+**Complexity Level**: Complex Application (advanced functionality with sophisticated AI integration, cross-feature linking, and analytics)
+
+**Primary User Activity**: Creating, Acting, and Interacting (hybrid productivity tool supporting both content creation and task execution)
+
+## Essential Features
+
+### Core Note-Taking Features
+- **Smart Editor**: Rich text editor with markdown support, drag-and-drop functionality
+- **AI-Powered Analysis**: Auto-categorization, smart tags, content summarization, sentiment analysis
+- **Advanced Search**: Full-text search with intelligent filters
+- **Organization**: Hierarchical folder structure, favorites system, recent notes dashboard
+- **Templates**: Pre-built templates for various use cases
+
+### Advanced Task Management System
+- **Smart Task Creation**: Natural language processing for task creation ("Call John tomorrow at 2pm")
+- **AI-Powered Features**:
+  - Intelligent time estimation based on task complexity
+  - Priority scoring algorithm with deadline analysis
+  - Automatic task breakdown for complex projects
+  - Productivity analytics and insights
+- **Multiple Views**:
+  - Interactive Kanban board with drag-and-drop
+  - Gantt chart timeline for project planning
+  - Calendar integration with time blocking
+  - List view with advanced filtering
+- **Pomodoro Integration**: Built-in focus mode with customizable timer settings
+- **Task Analytics**: Comprehensive productivity metrics and burndown charts
+
+### Cross-Feature Integration
+- **Task-Note Linking**: Connect tasks to relevant notes for context
+- **AI Insights**: Cross-analysis of notes and tasks for productivity recommendations
+- **Unified Search**: Find both notes and tasks in a single search interface
+- **Quick Actions**: Create tasks from notes, reference notes in tasks
+
+## Design Direction
+
+### Visual Tone & Identity
+**Emotional Response**: The design should evoke feelings of clarity, focus, and intelligent assistance. Users should feel empowered and organized.
+
+**Design Personality**: Modern, sophisticated, and subtly futuristic. The interface should feel like a premium productivity tool that adapts to the user's needs.
+
+**Visual Metaphors**: Cognitive enhancement, neural networks (subtle), clarity and focus, seamless connectivity between ideas and actions.
+
+**Simplicity Spectrum**: Sophisticated simplicity - clean and uncluttered but with deep functionality accessible when needed.
+
+### Color Strategy
+**Color Scheme Type**: Analogous with complementary accents
+
+**Primary Color**: Deep purple (oklch(0.45 0.15 270)) - representing intelligence, creativity, and focus
+**Secondary Colors**: 
+- Warm amber (oklch(0.7 0.12 65)) - for energy and action-oriented elements
+- Cool blue-grays for neutrals and backgrounds
+**Accent Color**: Vibrant orange (oklch(0.65 0.18 25)) - for CTAs, notifications, and important highlights
+
+**Color Psychology**: Purple conveys sophistication and mental clarity, amber adds warmth and energy for task completion, orange provides urgency and attention-grabbing elements.
+
+**Foreground/Background Pairings**:
+- Primary text on background: oklch(0.2 0.02 270) on oklch(0.98 0.005 240) - excellent contrast
+- White text on primary: oklch(1 0 0) on oklch(0.45 0.15 270) - strong contrast
+- Dark text on secondary: oklch(0.2 0.02 270) on oklch(0.7 0.12 65) - good readability
+- White text on accent: oklch(1 0 0) on oklch(0.65 0.18 25) - vibrant contrast
+
+### Typography System
+**Font Pairing Strategy**: Inter for UI elements and body text, JetBrains Mono for code/technical content
+**Typographic Hierarchy**: Clear distinction between headings (bold weights), body text (regular), and metadata (lighter weights)
+**Font Personality**: Inter provides friendly professionalism and excellent readability
+**Which fonts**: Inter (weights 400, 500, 600, 700) and JetBrains Mono (weights 400, 500)
+
+### Visual Hierarchy & Layout
+**Attention Direction**: Primary actions (create note/task) prominently placed, secondary actions organized in logical groupings
+**White Space Philosophy**: Generous spacing to reduce cognitive load and improve focus
+**Grid System**: Consistent spacing using Tailwind's spacing scale (4px increments)
+**Responsive Approach**: Mobile-first design with progressive enhancement for larger screens
+
+### UI Elements & Component Selection
+**Component Usage**: 
+- Cards for content containers (notes, tasks, analytics panels)
+- Dialogs for focused interactions (creation, editing)
+- Badges for status, priority, and metadata
+- Progress bars for task completion and analytics
+- Kanban-style layouts for task boards
+
+**Animation Philosophy**: Subtle, purposeful animations that enhance understanding of state changes and spatial relationships
+
+## Edge Cases & Problem Scenarios
+- **Performance**: Large numbers of notes/tasks requiring efficient filtering and virtualization
+- **Data Integrity**: Ensuring reliable synchronization between linked notes and tasks
+- **AI Reliability**: Graceful degradation when AI services are unavailable
+- **Mobile Experience**: Ensuring full functionality on smaller screens
+
+## Implementation Considerations
+**Scalability**: Modular architecture allowing for feature expansion
+**AI Integration**: Robust error handling for AI-powered features
+**State Management**: Efficient data persistence using KV store
+**Performance**: Optimized for fast search and real-time updates
+
+## Key Innovations
+1. **Natural Language Task Creation**: Revolutionary ease of task entry
+2. **AI-Powered Productivity Insights**: Unique analytics combining notes and tasks
+3. **Seamless Note-Task Integration**: Novel approach to connecting ideas with actions
+4. **Intelligent Time Estimation**: AI learning from user patterns for better planning
+5. **Focus Mode Integration**: Pomodoro technique seamlessly integrated with task management
+
+## Success Metrics
+- Task completion rates and productivity improvements
+- User engagement with AI-powered features
+- Time saved through intelligent automation
+- User satisfaction with cross-feature integration
+- Adoption of advanced features (Kanban, Timeline, Analytics)
+
+This approach uniquely combines the cognitive benefits of intelligent note-taking with sophisticated task management, creating a unified productivity ecosystem that learns and adapts to user behavior.

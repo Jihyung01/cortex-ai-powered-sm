@@ -184,19 +184,31 @@ export function useSearch() {
 }
 
 export function useAppState() {
-  const [currentView, setCurrentView] = useKV<'dashboard' | 'notes' | 'folders' | 'search' | 'templates'>('cortex-current-view', 'dashboard');
+  const [currentView, setCurrentView] = useKV<'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics'>('cortex-current-view', 'dashboard');
   const [selectedNoteId, setSelectedNoteId] = useKV<string | undefined>('cortex-selected-note', undefined);
+  const [selectedTaskId, setSelectedTaskId] = useKV<string | undefined>('cortex-selected-task', undefined);
   const [sidebarCollapsed, setSidebarCollapsed] = useKV<boolean>('cortex-sidebar-collapsed', false);
   const [isCreatingNote, setIsCreatingNote] = useState(false);
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [focusMode, setFocusMode] = useKV<boolean>('cortex-focus-mode', false);
+  const [activePomodoroSession, setActivePomodoroSession] = useKV<string | undefined>('cortex-active-pomodoro', undefined);
 
   return {
     currentView,
     setCurrentView,
     selectedNoteId,
     setSelectedNoteId,
+    selectedTaskId,
+    setSelectedTaskId,
     sidebarCollapsed,
     setSidebarCollapsed,
     isCreatingNote,
-    setIsCreatingNote
+    setIsCreatingNote,
+    isCreatingTask,
+    setIsCreatingTask,
+    focusMode,
+    setFocusMode,
+    activePomodoroSession,
+    setActivePomodoroSession
   };
 }
