@@ -5,6 +5,7 @@ import { Loader2 } from '@phosphor-icons/react';
 
 // Lazy load components for optimal bundle splitting
 const Dashboard = lazy(() => import('@/components/Dashboard'));
+const NotesView = lazy(() => import('@/components/NotesView'));
 const SearchView = lazy(() => import('@/components/SearchView'));
 const TemplatesView = lazy(() => import('@/components/TemplatesView'));
 const TasksView = lazy(() => import('@/components/TasksView'));
@@ -236,6 +237,7 @@ class ErrorBoundary extends React.Component<
 
 // Enhanced lazy-loaded components with appropriate loading states
 export const LazyDashboard = withLazyLoading(Dashboard, 'dashboard', 'Dashboard');
+export const LazyNotesView = withLazyLoading(NotesView, 'grid', 'Notes');
 export const LazySearchView = withLazyLoading(SearchView, 'list', 'Search');
 export const LazyTemplatesView = withLazyLoading(TemplatesView, 'grid', 'Templates');
 export const LazyTasksView = withLazyLoading(TasksView, 'list', 'Tasks');
@@ -270,6 +272,7 @@ export const LazyComprehensiveHelpCenter = withLazyLoading(ComprehensiveHelpCent
 export const getViewComponent = (viewName: string) => {
   const componentMap: Record<string, ComponentType<any>> = {
     dashboard: LazyDashboard,
+    notes: LazyNotesView,
     search: LazySearchView,
     templates: LazyTemplatesView,
     tasks: LazyTasksView,
@@ -303,6 +306,7 @@ export const preloadCriticalComponents = () => {
   // Preload the most commonly accessed components
   const criticalComponents = [
     () => import('@/components/Dashboard'),
+    () => import('@/components/NotesView'),
     () => import('@/components/TasksView'),
     () => import('@/components/SearchView')
   ];
