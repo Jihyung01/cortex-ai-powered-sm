@@ -1,1 +1,205 @@
-{\n  \"name\": \"Cortex - AI-Powered Notes\",\n  \"short_name\": \"Cortex\",\n  \"description\": \"Advanced note-taking app with AI-powered features, smart organization, and mobile-first design\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"background_color\": \"#ffffff\",\n  \"theme_color\": \"#6366f1\",\n  \"orientation\": \"portrait-primary\",\n  \"scope\": \"/\",\n  \"lang\": \"en\",\n  \"categories\": [\"productivity\", \"business\", \"utilities\"],\n  \"icons\": [\n    {\n      \"src\": \"/icon-72x72.png\",\n      \"sizes\": \"72x72\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"/icon-96x96.png\",\n      \"sizes\": \"96x96\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"/icon-128x128.png\",\n      \"sizes\": \"128x128\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"/icon-144x144.png\",\n      \"sizes\": \"144x144\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"/icon-152x152.png\",\n      \"sizes\": \"152x152\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"/icon-192x192.png\",\n      \"sizes\": \"192x192\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any maskable\"\n    },\n    {\n      \"src\": \"/icon-384x384.png\",\n      \"sizes\": \"384x384\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"/icon-512x512.png\",\n      \"sizes\": \"512x512\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any maskable\"\n    }\n  ],\n  \"shortcuts\": [\n    {\n      \"name\": \"New Note\",\n      \"short_name\": \"Note\",\n      \"description\": \"Create a new note\",\n      \"url\": \"/?action=new-note\",\n      \"icons\": [\n        {\n          \"src\": \"/icon-192x192.png\",\n          \"sizes\": \"192x192\",\n          \"type\": \"image/png\"\n        }\n      ]\n    },\n    {\n      \"name\": \"New Task\",\n      \"short_name\": \"Task\",\n      \"description\": \"Create a new task\",\n      \"url\": \"/?action=new-task\",\n      \"icons\": [\n        {\n          \"src\": \"/icon-192x192.png\",\n          \"sizes\": \"192x192\",\n          \"type\": \"image/png\"\n        }\n      ]\n    },\n    {\n      \"name\": \"Voice Note\",\n      \"short_name\": \"Voice\",\n      \"description\": \"Record a voice note\",\n      \"url\": \"/?action=voice-note\",\n      \"icons\": [\n        {\n          \"src\": \"/icon-192x192.png\",\n          \"sizes\": \"192x192\",\n          \"type\": \"image/png\"\n        }\n      ]\n    },\n    {\n      \"name\": \"AI Assistant\",\n      \"short_name\": \"AI\",\n      \"description\": \"Open AI assistant\",\n      \"url\": \"/?action=ai-assistant\",\n      \"icons\": [\n        {\n          \"src\": \"/icon-192x192.png\",\n          \"sizes\": \"192x192\",\n          \"type\": \"image/png\"\n        }\n      ]\n    }\n  ],\n  \"screenshots\": [\n    {\n      \"src\": \"/screenshot-mobile.png\",\n      \"sizes\": \"390x844\",\n      \"type\": \"image/png\",\n      \"form_factor\": \"narrow\"\n    },\n    {\n      \"src\": \"/screenshot-desktop.png\",\n      \"sizes\": \"1280x720\",\n      \"type\": \"image/png\",\n      \"form_factor\": \"wide\"\n    }\n  ],\n  \"related_applications\": [],\n  \"prefer_related_applications\": false,\n  \"protocol_handlers\": [\n    {\n      \"protocol\": \"web+cortex\",\n      \"url\": \"/?handler=%s\"\n    }\n  ],\n  \"file_handlers\": [\n    {\n      \"action\": \"/handle-file\",\n      \"accept\": {\n        \"text/plain\": [\".txt\"],\n        \"text/markdown\": [\".md\"],\n        \"application/json\": [\".json\"]\n      }\n    }\n  ],\n  \"share_target\": {\n    \"action\": \"/share\",\n    \"method\": \"POST\",\n    \"enctype\": \"multipart/form-data\",\n    \"params\": {\n      \"title\": \"title\",\n      \"text\": \"text\",\n      \"url\": \"url\",\n      \"files\": [\n        {\n          \"name\": \"files\",\n          \"accept\": [\"image/*\", \"text/*\", \"application/pdf\"]\n        }\n      ]\n    }\n  },\n  \"edge_side_panel\": {\n    \"preferred_width\": 400\n  },\n  \"launch_handler\": {\n    \"client_mode\": \"focus-existing\"\n  }\n}
+{
+  "name": "Cortex - AI-Powered Productivity Suite",
+  "short_name": "Cortex",
+  "description": "Advanced note-taking and productivity app with AI-powered features, team collaboration, and intelligent workflow automation",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "categories": ["productivity", "business", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "id": "com.cortex.app",
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile dashboard view showing notes and tasks"
+    },
+    {
+      "src": "/screenshot-mobile-2.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "AI assistant helping with note organization"
+    },
+    {
+      "src": "/screenshot-desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop workspace with multiple panels"
+    },
+    {
+      "src": "/screenshot-desktop-2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Team collaboration interface"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Note",
+      "short_name": "Note",
+      "description": "Create a new note quickly",
+      "url": "/?action=new-note",
+      "icons": [
+        {
+          "src": "/shortcut-new-note.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Quick Task",
+      "short_name": "Task",
+      "description": "Add a new task",
+      "url": "/?action=new-task",
+      "icons": [
+        {
+          "src": "/shortcut-new-task.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Voice Note",
+      "short_name": "Voice",
+      "description": "Record a voice note",
+      "url": "/?action=voice-note",
+      "icons": [
+        {
+          "src": "/shortcut-voice-note.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "description": "Search your notes and tasks",
+      "url": "/?action=search",
+      "icons": [
+        {
+          "src": "/shortcut-search.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*", "text/*", ".pdf", ".doc", ".docx"]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/handle-file",
+      "accept": {
+        "text/plain": [".txt", ".md"],
+        "text/markdown": [".md", ".markdown"],
+        "application/json": [".json"],
+        "text/csv": [".csv"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "cortex",
+      "url": "/handle-protocol?url=%s"
+    }
+  ],
+  "permissions": [
+    "notifications",
+    "background-sync"
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.cortex.app",
+      "id": "com.cortex.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/cortex-productivity/id123456789"
+    }
+  ]
+}

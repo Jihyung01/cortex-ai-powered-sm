@@ -1,24 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
 import { Sidebar } from '@/components/Sidebar';
-import { Dashboard } from '@/components/Dashboard';
-import { SearchView } from '@/components/SearchView';
-import { TemplatesView } from '@/components/TemplatesView';
-import { TasksView } from '@/components/TasksView';
-import { KanbanView } from '@/components/KanbanView';
-import { TimelineView } from '@/components/TimelineView';
-import { CalendarView } from '@/components/CalendarView';
-import { AnalyticsView } from '@/components/AnalyticsView';
-import { AIAssistantView } from '@/components/AIAssistantView';
-import { TeamView } from '@/components/TeamView';
-import { ProjectsView } from '@/components/ProjectsView';
-import { CollaborationView } from '@/components/CollaborationView';
-import { IntegrationsView } from '@/components/IntegrationsView';
-import { AdminView } from '@/components/AdminView';
-import { ClientPortalView } from '@/components/ClientPortalView';
-import { FocusAssistantView } from '@/components/FocusAssistantView';
-import { IntelligentTimeView } from '@/components/IntelligentTimeView';
-import { WellnessView } from '@/components/WellnessView';
-import { FutureTechView } from '@/components/FutureTechView';
 import { FocusMode } from '@/components/FocusMode';
 import { SmartNotifications } from '@/components/SmartNotifications';
 import { AIAssistantFAB } from '@/components/AIAssistantFAB';
@@ -27,6 +8,19 @@ import { PullToRefresh } from '@/components/PullToRefresh';
 import { BottomSheet, QuickNoteCreator } from '@/components/BottomSheet';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { EnterpriseErrorBoundary } from '@/components/EnterpriseErrorBoundary';
+import { 
+  AuthenticationProvider, 
+  MonetizationProvider,
+  EnterpriseLoginForm,
+  InteractiveOnboarding,
+  useAuth,
+  useMonetization
+} from '@/components/enterprise';
+import { 
+  getViewComponent, 
+  preloadCriticalComponents,
+  addResourceHints
+} from '@/components/ProductionOptimizations';
 import { useAppState } from '@/hooks/use-notes';
 import { useIsMobile, usePWA } from '@/hooks/use-mobile';
 import { useGestureSupport, useKeyboardNavigation } from '@/hooks/use-accessibility';
@@ -50,12 +44,16 @@ function App() {
   const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Initialize workspace context
+  // Initialize production optimizations
   useEffect(() => {
     const initializeApp = async () => {
-      // In a real app, this would check for existing workspaces
-      // and create a default personal workspace if none exist
-      console.log('Initializing Cortex app...');
+      // Add resource hints for performance
+      addResourceHints();
+      
+      // Preload critical components
+      preloadCriticalComponents();
+      
+      console.log('Cortex production app initialized');
     };
     
     initializeApp();
@@ -123,58 +121,118 @@ function App() {
   }, []);
 
   const renderCurrentView = () => {
-    const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
-    const advancedViews = ['focus-assistant', 'intelligent-time', 'wellness', 'future-tech'];
-    const isEnterpriseView = enterpriseViews.includes(currentView);
-    const isAdvancedView = advancedViews.includes(currentView);
+    const ViewComponent = getViewComponent(currentView);
     
-    const ViewComponent = () => {
-      switch (currentView) {
-        case 'dashboard':
-          return <Dashboard />;
-        case 'search':
-          return <SearchView />;
-        case 'templates':
-          return <TemplatesView />;
-        case 'tasks':
-          return <TasksView />;
-        case 'kanban':
-          return <KanbanView />;
-        case 'timeline':
-          return <TimelineView />;
-        case 'calendar':
-          return <CalendarView />;
-        case 'analytics':
-          return <AnalyticsView />;
-        case 'ai-assistant':
-          return <AIAssistantView />;
-        case 'team':
-          return <TeamView />;
-        case 'projects':
-          return <ProjectsView />;
-        case 'collaboration':
-          return <CollaborationView />;
-        case 'integrations':
-          return <IntegrationsView />;
-        case 'admin':
-          return <AdminView />;
-        case 'client-portal':
-          return <ClientPortalView />;
-        case 'focus-assistant':
-          return <FocusAssistantView />;
-        case 'intelligent-time':
-          return <IntelligentTimeView />;
-        case 'wellness':
-          return <WellnessView />;
-        case 'future-tech':
-          return <FutureTechView />;
-        case 'notes':
-        case 'folders':
-        default:
-          return <Dashboard />;
-      }
-    };
+    const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
+    const isEnterpriseView = enterpriseViews.includes(currentView);
+    
+    // Wrap enterprise views with error boundary
+    if (isEnterpriseView) {
+      return (
+        <EnterpriseErrorBoundary>
+          <ViewComponent />
+        </EnterpriseErrorBoundary>
+      );
+    }
 
+    return <ViewComponent />;
+  };
+
+function App() {
+  const { currentView, sidebarCollapsed, focusMode } = useAppState();
+  const isMobile = useIsMobile();
+  const { prefersReducedMotion, getAnimationProps } = useGestureSupport();
+  const { isKeyboardUser } = useKeyboardNavigation();
+  const { setupInstallPrompt } = useNativeFeatures();
+  const { syncPendingActions } = useOffline();
+  const { isServiceWorkerReady } = usePWA();
+  
+  // Mobile-specific state
+  const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Initialize production optimizations
+  useEffect(() => {
+    const initializeApp = async () => {
+      // Add resource hints for performance
+      addResourceHints();
+      
+      // Preload critical components
+      preloadCriticalComponents();
+      
+      console.log('Cortex production app initialized');
+    };
+    
+    initializeApp();
+  }, []);
+
+  // Setup PWA features
+  useEffect(() => {
+    const cleanup = setupInstallPrompt();
+    return cleanup;
+  }, [setupInstallPrompt]);
+
+  // Handle URL parameters for PWA shortcuts
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    
+    if (action === 'new-note') {
+      setIsQuickNoteOpen(true);
+    }
+  }, []);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await syncPendingActions();
+      // Simulate data refresh
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } finally {
+      setRefreshing(false);
+    }
+  }, [syncPendingActions]);
+
+  const handleCreateNote = useCallback(() => {
+    setIsQuickNoteOpen(true);
+  }, []);
+
+  const handleCreateTask = useCallback(() => {
+    // Open task creation (implement similar to note creation)
+    console.log('Create task');
+  }, []);
+
+  const handleVoiceNote = useCallback(() => {
+    // Open voice note recording
+    console.log('Voice note');
+  }, []);
+
+  const handleCameraNote = useCallback(() => {
+    // Open camera for note
+    console.log('Camera note');
+  }, []);
+
+  const handleQuickShare = useCallback(() => {
+    // Open quick share
+    console.log('Quick share');
+  }, []);
+
+  const handleSettings = useCallback(() => {
+    // Open settings
+    console.log('Settings');
+  }, []);
+
+  const handleSaveNote = useCallback(async (noteData: any) => {
+    // Save note logic
+    console.log('Saving note:', noteData);
+  }, []);
+
+  const renderCurrentView = () => {
+    const ViewComponent = getViewComponent(currentView);
+    
+    const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
+    const isEnterpriseView = enterpriseViews.includes(currentView);
+    
     // Wrap enterprise views with error boundary
     if (isEnterpriseView) {
       return (
@@ -292,4 +350,52 @@ function App() {
   );
 }
 
-export default App;
+// Enhanced App component with enterprise providers
+function EnhancedApp() {
+  return (
+    <AuthenticationProvider>
+      <MonetizationProvider>
+        <AppWithAuth />
+      </MonetizationProvider>
+    </AuthenticationProvider>
+  );
+}
+
+// App component that handles authentication state
+function AppWithAuth() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    // Check if user needs onboarding
+    const hasCompletedOnboarding = localStorage.getItem('cortex-onboarding-completed');
+    if (isAuthenticated && !hasCompletedOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, [isAuthenticated]);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('cortex-onboarding-completed', 'true');
+    setShowOnboarding(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <EnterpriseLoginForm onSuccess={() => window.location.reload()} />;
+  }
+
+  if (showOnboarding) {
+    return <InteractiveOnboarding onComplete={handleOnboardingComplete} />;
+  }
+
+  return <App />;
+}
+
+export default EnhancedApp;
