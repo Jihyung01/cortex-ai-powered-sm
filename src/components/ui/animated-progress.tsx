@@ -1,99 +1,56 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { springPresets } from '@/hooks/use-motion';
 
 interface AnimatedProgressProps {
   value: number;
-  max?: number;
+  max: number;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'success' | 'warning' | 'error';
-  showValue?: boolean;
-  animated?: boolean;
-  className?: string;
 }
-
-export const AnimatedProgress: React.FC<AnimatedProgressProps> = ({
-  value,
-  max = 100,
-  size = 'md',
-  variant = 'default',
-  showValue = false,
-  animated = true,
-  className
-}) => {
-  const percentage = Math.min((value / max) * 100, 100);
-
-  const sizes = {
-    sm: 'h-2',
-    md: 'h-3',
-    lg: 'h-4'
-  };
-
-  const variants = {
-    default: 'bg-primary',
-    success: 'bg-green-500',
-    warning: 'bg-yellow-500',
-    error: 'bg-red-500'
-  };
-
-  return (
-    <div className={cn('w-full', className)}>
-      <div className={cn(
-        'w-full bg-secondary/20 rounded-full overflow-hidden',
-        sizes[size]
-      )}>
-        <motion.div
-          className={cn(
-            'h-full rounded-full relative overflow-hidden',
-            variants[variant],
-            animated && 'progress-shimmer'
-          )}
-          initial={{ width: 0 }}
-          animate={{ width: `${percentage}%` }}
-          transition={springPresets.gentle}
-        />
-      </div>
-      {showValue && (
-        <motion.div
-          className="text-sm text-muted-foreground mt-1 text-right"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, ...springPresets.gentle }}
-        >
-          {Math.round(percentage)}%
-        </motion.div>
-      )}
-    </div>
-  );
-};
 
 interface CircularProgressProps {
   value: number;
-  max?: number;
-  size?: number;
-  strokeWidth?: number;
+  max: number;
+  size: number;
+  strokeWidth: number;
   variant?: 'default' | 'success' | 'warning' | 'error';
-  showValue?: boolean;
-  children?: React.ReactNode;
 }
 
-export const CircularProgress: React.FC<CircularProgressProps> = ({
-  value,
-  max = 100,
-  size = 120,
-  strokeWidth = 8,
-  variant = 'default',
-  showValue = false,
-  children
-}) => {
+const variantColors = {
+  default: 'bg-primary',
+  success: 'bg-green-500',
+  warning: 'bg-yellow-500',
+  error: 'bg-red-500'
+};
+
+export function AnimatedProgress({ value, max, size = 'md', variant = 'default' }: AnimatedProgressProps) {
+  const percentage = Math.min((value / max) * 100, 100);
+  
+  const heights = {
+    sm: 'h-1',
+    md: 'h-2',
+    lg: 'h-3'
+  };
+
+  return (
+    <div className={cn('w-full bg-muted rounded-full overflow-hidden', heights[size])}>
+      <motion.div
+        className={cn('h-full rounded-full', variantColors[variant])}
+        initial={{ width: 0 }}
+        animate={{ width: `${percentage}%` }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      />
+    </div>
+  );
+}
+
+export function CircularProgress({ value, max, size, strokeWidth, variant = 'default' }: CircularProgressProps) {
   const percentage = Math.min((value / max) * 100, 100);
   const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const strokeDasharray = circumference;
+  const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-  const variants = {
+  const colors = {
     default: 'stroke-primary',
     success: 'stroke-green-500',
     warning: 'stroke-yellow-500',
@@ -101,13 +58,8 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   };
 
   return (
-    <div className="relative inline-flex items-center justify-center">
-      <svg
-        width={size}
-        height={size}
-        className="transform -rotate-90"
-      >
-        {/* Background circle */}
+    <div className="relative">
+      <svg width={size} height={size} className="transform -rotate-90">
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -115,35 +67,25 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           stroke="currentColor"
           strokeWidth={strokeWidth}
           fill="none"
-          className="text-secondary/20"
+          className="text-muted"
         />
-        {/* Progress circle */}
         <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          fill="none"
+          stroke="currentColor"
           strokeWidth={strokeWidth}
+          fill="none"
+          className={colors[variant]}
           strokeLinecap="round"
-          strokeDasharray={strokeDasharray}
-          className={variants[variant]}
-          initial={{ strokeDashoffset: circumference }}
+          initial={{ strokeDasharray: circumference, strokeDashoffset: circumference }}
           animate={{ strokeDashoffset }}
-          transition={springPresets.gentle}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        {children || (showValue && (
-          <motion.span
-            className="text-sm font-medium"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, ...springPresets.bouncy }}
-          >
-            {Math.round(percentage)}%
-          </motion.span>
-        ))}
+        <span className="text-sm font-medium">{value}</span>
       </div>
     </div>
   );
-};
+}
