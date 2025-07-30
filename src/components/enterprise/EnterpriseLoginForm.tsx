@@ -85,19 +85,25 @@ export function EnterpriseLoginForm({ onSuccess }: LoginFormProps) {
     }
   };
 
-  const handleDemoMode = () => {
-    // Set demo user flag in localStorage for the auth provider to recognize
-    localStorage.setItem('cortex-demo-mode', 'true');
-    
-    // Show success message
-    toast.success('Entering Demo Mode', {
-      description: 'Showcasing all Cortex features without authentication'
-    });
-    
-    // Trigger success callback immediately
-    setTimeout(() => {
-      onSuccess?.();
-    }, 500);
+  const handleDemoMode = async () => {
+    try {
+      // Set demo user flag in localStorage for the auth provider to recognize
+      localStorage.setItem('cortex-demo-mode', 'true');
+      
+      // Show success message
+      toast.success('Entering Demo Mode', {
+        description: 'Showcasing all Cortex features without authentication'
+      });
+      
+      // Force a reload to trigger auth provider initialization with demo mode
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+      
+    } catch (error) {
+      console.error('Demo mode activation failed:', error);
+      toast.error('Failed to enter demo mode');
+    }
   };
 
   const springTransition = {
@@ -233,6 +239,27 @@ export function EnterpriseLoginForm({ onSuccess }: LoginFormProps) {
                         >
                           {isLoading ? 'Signing in...' : 'Sign In'}
                         </Button>
+                        
+                        {/* Test Account Info */}
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          transition={{ delay: 0.5 }}
+                          className="mt-4 p-3 bg-accent/10 border border-accent/20 rounded-lg"
+                        >
+                          <div className="text-xs text-center space-y-1">
+                            <p className="font-medium text-accent">Test Account Available</p>
+                            <p className="text-muted-foreground">
+                              Email: <span className="font-mono">demo@cortex.com</span>
+                            </p>
+                            <p className="text-muted-foreground">
+                              Password: <span className="font-mono">demo123</span>
+                            </p>
+                            <p className="text-muted-foreground italic">
+                              (Full access, no MFA required)
+                            </p>
+                          </div>
+                        </motion.div>
                       </form>
                     </TabsContent>
 

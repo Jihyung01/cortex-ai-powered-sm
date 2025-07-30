@@ -66,6 +66,7 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       const isDemoMode = localStorage.getItem('cortex-demo-mode') === 'true';
       
       if (isDemoMode) {
+        console.log('Demo mode detected, activating...');
         await activateDemoMode();
         return;
       }
@@ -84,7 +85,7 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
   const activateDemoMode = async () => {
     const demoUser: User = {
       id: 'demo-user',
-      email: 'demo@cortex.ai',
+      email: 'demo@cortex.com', // Changed to match test account
       name: 'Demo User',
       avatar: '🚀',
       role: 'admin', // Give full access in demo mode
@@ -94,12 +95,16 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
         'read:analytics', 'write:analytics',
         'read:team', 'write:team',
         'read:projects', 'write:projects',
+        'read:collaboration', 'write:collaboration',
+        'read:integrations', 'write:integrations',
         'admin:all'
       ],
       mfaEnabled: false,
       lastLoginAt: new Date(),
       createdAt: new Date()
     };
+
+    console.log('Activating demo mode with user:', demoUser);
 
     setAuthState({
       user: demoUser,
@@ -359,7 +364,34 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
     // Mock authentication - in production, call your auth API
     return new Promise<{ user: User; requiresMFA: boolean }>((resolve, reject) => {
       setTimeout(() => {
-        if (credentials.email && credentials.password) {
+        // Test account for demo purposes
+        if (credentials.email === 'demo@cortex.com' && credentials.password === 'demo123') {
+          resolve({
+            user: {
+              id: 'test-user-demo',
+              email: 'demo@cortex.com',
+              name: 'Demo Test User',
+              avatar: '🧪',
+              role: 'admin', // Give full access for testing
+              permissions: [
+                'read:notes', 'write:notes', 'delete:notes',
+                'read:tasks', 'write:tasks', 'delete:tasks',
+                'read:analytics', 'write:analytics',
+                'read:team', 'write:team',
+                'read:projects', 'write:projects',
+                'read:collaboration', 'write:collaboration',
+                'read:integrations', 'write:integrations',
+                'admin:all'
+              ],
+              mfaEnabled: false, // Skip MFA for test account
+              lastLoginAt: new Date(),
+              createdAt: new Date()
+            },
+            requiresMFA: false // Skip MFA for easier testing
+          });
+        }
+        // Default mock authentication for other credentials
+        else if (credentials.email && credentials.password) {
           resolve({
             user: {
               id: 'user-123',

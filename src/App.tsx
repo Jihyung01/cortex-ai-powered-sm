@@ -427,7 +427,12 @@ function AppWithAuth() {
   }
 
   if (!isAuthenticated) {
-    return <EnterpriseLoginForm onSuccess={() => window.location.reload()} />;
+    return <EnterpriseLoginForm onSuccess={() => {
+      // Small delay to allow auth state to update
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }} />;
   }
 
   if (showOnboarding) {
