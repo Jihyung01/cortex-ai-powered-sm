@@ -9,6 +9,12 @@ import { TimelineView } from '@/components/TimelineView';
 import { CalendarView } from '@/components/CalendarView';
 import { AnalyticsView } from '@/components/AnalyticsView';
 import { AIAssistantView } from '@/components/AIAssistantView';
+import { TeamView } from '@/components/TeamView';
+import { ProjectsView } from '@/components/ProjectsView';
+import { CollaborationView } from '@/components/CollaborationView';
+import { IntegrationsView } from '@/components/IntegrationsView';
+import { AdminView } from '@/components/AdminView';
+import { ClientPortalView } from '@/components/ClientPortalView';
 import { FocusMode } from '@/components/FocusMode';
 import { SmartNotifications } from '@/components/SmartNotifications';
 import { AIAssistantFAB } from '@/components/AIAssistantFAB';
@@ -16,6 +22,7 @@ import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { BottomSheet, QuickNoteCreator } from '@/components/BottomSheet';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
+import { EnterpriseErrorBoundary } from '@/components/EnterpriseErrorBoundary';
 import { useAppState } from '@/hooks/use-notes';
 import { useIsMobile, usePWA } from '@/hooks/use-mobile';
 import { useGestureSupport, useKeyboardNavigation } from '@/hooks/use-accessibility';
@@ -38,6 +45,17 @@ function App() {
   // Mobile-specific state
   const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Initialize workspace context
+  useEffect(() => {
+    const initializeApp = async () => {
+      // In a real app, this would check for existing workspaces
+      // and create a default personal workspace if none exist
+      console.log('Initializing Cortex app...');
+    };
+    
+    initializeApp();
+  }, []);
 
   // Setup PWA features
   useEffect(() => {
@@ -101,30 +119,58 @@ function App() {
   }, []);
 
   const renderCurrentView = () => {
-    switch (currentView) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'search':
-        return <SearchView />;
-      case 'templates':
-        return <TemplatesView />;
-      case 'tasks':
-        return <TasksView />;
-      case 'kanban':
-        return <KanbanView />;
-      case 'timeline':
-        return <TimelineView />;
-      case 'calendar':
-        return <CalendarView />;
-      case 'analytics':
-        return <AnalyticsView />;
-      case 'ai-assistant':
-        return <AIAssistantView />;
-      case 'notes':
-      case 'folders':
-      default:
-        return <Dashboard />; // For now, all views show dashboard
+    const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
+    const isEnterpriseView = enterpriseViews.includes(currentView);
+    
+    const ViewComponent = () => {
+      switch (currentView) {
+        case 'dashboard':
+          return <Dashboard />;
+        case 'search':
+          return <SearchView />;
+        case 'templates':
+          return <TemplatesView />;
+        case 'tasks':
+          return <TasksView />;
+        case 'kanban':
+          return <KanbanView />;
+        case 'timeline':
+          return <TimelineView />;
+        case 'calendar':
+          return <CalendarView />;
+        case 'analytics':
+          return <AnalyticsView />;
+        case 'ai-assistant':
+          return <AIAssistantView />;
+        case 'team':
+          return <TeamView />;
+        case 'projects':
+          return <ProjectsView />;
+        case 'collaboration':
+          return <CollaborationView />;
+        case 'integrations':
+          return <IntegrationsView />;
+        case 'admin':
+          return <AdminView />;
+        case 'client-portal':
+          return <ClientPortalView />;
+        case 'notes':
+        case 'folders':
+        default:
+          return <Dashboard />;
+      }
+    };
+
+    // Wrap enterprise views with error boundary
+    if (isEnterpriseView) {
+      return (
+        <EnterpriseErrorBoundary>
+          <ViewComponent />
+        </EnterpriseErrorBoundary>
+      );
     }
+
+    return <ViewComponent />;
   };
 
   if (focusMode) {

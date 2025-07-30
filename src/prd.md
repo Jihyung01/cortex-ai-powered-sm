@@ -1,23 +1,24 @@
-# Cortex - AI-Powered Note-Taking & Task Management App
+# Cortex - Enterprise AI-Powered Productivity Platform
 
 ## Core Purpose & Success
 
-**Mission Statement**: Cortex is an intelligent productivity platform that seamlessly integrates advanced note-taking with sophisticated task management, powered by AI to enhance cognitive performance and organizational efficiency, with a mobile-first approach for modern productivity.
+**Mission Statement**: Cortex is an enterprise-grade intelligent productivity platform that seamlessly integrates advanced note-taking, sophisticated task management, and real-time team collaboration, powered by AI to enhance organizational efficiency and team performance with mobile-first design and enterprise security.
 
 **Success Indicators**: 
-- High user engagement with both notes and tasks features across all devices
-- Increased productivity metrics through AI insights and mobile optimization
-- Seamless workflow between note-taking and task execution on any platform
-- Positive user feedback on AI-powered features and mobile experience
-- High PWA installation and retention rates
+- High team adoption and collaboration metrics across all devices
+- Increased organizational productivity through AI insights and team coordination
+- Seamless workflow between individual work and team collaboration
+- Strong security compliance and audit trail satisfaction
+- Enterprise integration adoption rates and workflow automation success
+- High PWA installation and team retention rates
 
-**Experience Qualities**: Intelligent, Seamless, Empowering, Mobile-Native
+**Experience Qualities**: Intelligent, Collaborative, Secure, Enterprise-Ready, Mobile-Native
 
 ## Project Classification & Approach
 
-**Complexity Level**: Complex Application (advanced functionality with sophisticated AI integration, cross-feature linking, analytics, and progressive web app capabilities)
+**Complexity Level**: Enterprise Application (advanced functionality with sophisticated AI integration, real-time collaboration, enterprise security, multi-workspace support, and progressive web app capabilities)
 
-**Primary User Activity**: Creating, Acting, and Interacting (hybrid productivity tool supporting both content creation and task execution with native mobile functionality)
+**Primary User Activity**: Creating, Collaborating, and Coordinating (enterprise productivity platform supporting individual work, team collaboration, and organizational coordination with native mobile functionality)
 
 ## Essential Features
 
@@ -101,6 +102,47 @@
   - Performance pattern recognition and recommendations
   - Adaptive suggestions that improve over time
   - Smart notifications with contextual alerts
+
+### Enterprise Collaboration Features
+
+- **Team Management System**:
+  - Multi-workspace support with role-based permissions (admin, editor, viewer)
+  - Team member invitation flow with guided onboarding experience
+  - Organizational hierarchy with department and project views
+  - Resource allocation and team capacity planning tools
+  - Comprehensive team performance analytics with productivity insights
+
+- **Real-time Collaboration**:
+  - Live document editing with sophisticated conflict resolution algorithms
+  - Real-time cursor tracking and user presence indicators
+  - Collaborative task boards with instant updates and notifications
+  - Integrated messaging system for contextual team communication
+  - Screen sharing capabilities for remote collaboration sessions
+  - Live collaborative whiteboards for brainstorming and planning
+
+- **Advanced Project Management**:
+  - Milestone tracking with dependency management and critical path analysis
+  - Resource allocation with workload balancing visualization
+  - Risk assessment tools with mitigation planning and tracking
+  - Budget tracking and expense management integration
+  - Client portal for external stakeholder access and project updates
+  - Gantt charts with drag-and-drop timeline management
+
+- **Integration Ecosystem**:
+  - Native Slack, Microsoft Teams, and Discord integration
+  - Bi-directional Google Workspace and Office 365 synchronization
+  - Import/export functionality for Jira, Trello, Asana, and Monday.com
+  - GitHub and GitLab repository linking for development teams
+  - Zapier automation workflows for custom business process integration
+  - REST API for custom enterprise integrations
+
+- **Enterprise Security & Compliance**:
+  - End-to-end encryption for all data and communications
+  - Comprehensive audit logging with detailed activity tracking
+  - Single Sign-On (SSO) integration with enterprise identity providers
+  - Data residency controls and compliance reporting
+  - Granular permission management with approval workflows
+  - Regular security assessments and penetration testing compliance
 
 ## Design Direction
 

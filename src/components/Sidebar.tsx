@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { 
   Brain, 
   FileText, 
@@ -12,17 +13,26 @@ import {
   MessageCircle,
   Home,
   Menu,
-  X
+  X,
+  Users,
+  FolderOpen,
+  UsersThree,
+  Plug,
+  Shield,
+  Globe,
+  Building
 } from '@phosphor-icons/react';
 import { useAppState } from '@/hooks/use-notes';
+import { useWorkspace } from '@/hooks/use-workspace';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {
   const { currentView, setCurrentView, sidebarCollapsed, setSidebarCollapsed } = useAppState();
+  const { currentWorkspace, hasPermission } = useWorkspace();
   const isMobile = useIsMobile();
 
-  const menuItems = [
+  const personalItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'notes', label: 'Notes', icon: FileText },
     { id: 'search', label: 'Search', icon: Search },
@@ -32,6 +42,50 @@ export function Sidebar() {
     { id: 'ai-assistant', label: 'AI Assistant', icon: MessageCircle },
   ];
 
+  const enterpriseItems = [
+    { 
+      id: 'team', 
+      label: 'Team', 
+      icon: Users,
+      requiresPermission: ['settings', 'read'] as const
+    },
+    { 
+      id: 'projects', 
+      label: 'Projects', 
+      icon: FolderOpen,
+      requiresPermission: ['projects', 'read'] as const
+    },
+    { 
+      id: 'collaboration', 
+      label: 'Collaboration', 
+      icon: UsersThree 
+    },
+    { 
+      id: 'integrations', 
+      label: 'Integrations', 
+      icon: Plug,
+      requiresPermission: ['integrations', 'read'] as const
+    },
+    { 
+      id: 'admin', 
+      label: 'Admin', 
+      icon: Shield,
+      requiresPermission: ['settings', 'update'] as const
+    },
+    { 
+      id: 'client-portal', 
+      label: 'Client Portal', 
+      icon: Globe,
+      requiresPermission: ['projects', 'read'] as const
+    }
+  ];
+
+  const filteredEnterpriseItems = enterpriseItems.filter(item => {
+    if (!item.requiresPermission) return true;
+    const [resource, action] = item.requiresPermission;
+    return hasPermission(resource, action);
+  });
+
   if (isMobile) {
     return null; // Mobile uses different navigation
   }
@@ -39,7 +93,7 @@ export function Sidebar() {
   return (
     <motion.aside
       className={cn(
-        'h-full bg-card border-r transition-all duration-300 flex flex-col',
+        'h-full bg-card border-r transition-all duration-300 flex flex-col glass-sidebar',
         sidebarCollapsed ? 'w-16' : 'w-64'
       )}
       initial={{ x: -100 }}
@@ -62,12 +116,28 @@ export function Sidebar() {
             {sidebarCollapsed ? <Menu size={16} /> : <X size={16} />}
           </Button>
         </div>
+        
+        {/* Workspace Indicator */}
+        {!sidebarCollapsed && currentWorkspace && (
+          <div className="mt-3 p-2 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Building size={14} className="text-muted-foreground" />
+              <span className="text-sm font-medium truncate">{currentWorkspace.name}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-2">
+      <nav className="flex-1 p-2 overflow-auto">
+        {/* Personal Section */}
+        {!sidebarCollapsed && (
+          <div className="text-xs font-medium text-muted-foreground mb-2 px-2">
+            PERSONAL
+          </div>
+        )}
         <div className="space-y-1">
-          {menuItems.map((item) => {
+          {personalItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
             
@@ -87,6 +157,41 @@ export function Sidebar() {
             );
           })}
         </div>
+
+        {/* Enterprise Section */}
+        {currentWorkspace && filteredEnterpriseItems.length > 0 && (
+          <>
+            {!sidebarCollapsed && (
+              <>
+                <Separator className="my-4" />
+                <div className="text-xs font-medium text-muted-foreground mb-2 px-2">
+                  ENTERPRISE
+                </div>
+              </>
+            )}
+            <div className="space-y-1">
+              {filteredEnterpriseItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentView === item.id;
+                
+                return (
+                  <Button
+                    key={item.id}
+                    variant={isActive ? 'secondary' : 'ghost'}
+                    className={cn(
+                      'w-full justify-start',
+                      sidebarCollapsed && 'px-2'
+                    )}
+                    onClick={() => setCurrentView(item.id as any)}
+                  >
+                    <Icon size={16} className={sidebarCollapsed ? '' : 'mr-2'} />
+                    {!sidebarCollapsed && item.label}
+                  </Button>
+                );
+              })}
+            </div>
+          </>
+        )}
       </nav>
 
       {/* Footer */}

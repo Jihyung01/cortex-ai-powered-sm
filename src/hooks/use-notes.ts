@@ -1,6 +1,6 @@
 import { useKV } from '@github/spark/hooks';
 import { useState, useCallback, useMemo } from 'react';
-import type { Note, Folder, SearchFilters } from '../lib/types';
+import type { Note, Folder, SearchFilters, ViewMode } from '../lib/types';
 
 export function useNotes() {
   const [notes, setNotes] = useKV<Note[]>('cortex-notes', []);
@@ -184,7 +184,9 @@ export function useSearch() {
 }
 
 export function useAppState() {
-  const [currentView, setCurrentView] = useKV<'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics' | 'ai-assistant'>('cortex-current-view', 'dashboard');
+  const [currentView, setCurrentView] = useKV<ViewMode>('cortex-current-view', 'dashboard');
+  const [currentWorkspaceId, setCurrentWorkspaceId] = useKV<string | undefined>('cortex-current-workspace', undefined);
+  const [currentProjectId, setCurrentProjectId] = useKV<string | undefined>('cortex-current-project', undefined);
   const [selectedNoteId, setSelectedNoteId] = useKV<string | undefined>('cortex-selected-note', undefined);
   const [selectedTaskId, setSelectedTaskId] = useKV<string | undefined>('cortex-selected-task', undefined);
   const [sidebarCollapsed, setSidebarCollapsed] = useKV<boolean>('cortex-sidebar-collapsed', false);
@@ -192,10 +194,15 @@ export function useAppState() {
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [focusMode, setFocusMode] = useKV<boolean>('cortex-focus-mode', false);
   const [activePomodoroSession, setActivePomodoroSession] = useKV<string | undefined>('cortex-active-pomodoro', undefined);
+  const [activeCollaborationSession, setActiveCollaborationSession] = useKV<string | undefined>('cortex-active-collaboration', undefined);
 
   return {
     currentView,
     setCurrentView,
+    currentWorkspaceId,
+    setCurrentWorkspaceId,
+    currentProjectId,
+    setCurrentProjectId,
     selectedNoteId,
     setSelectedNoteId,
     selectedTaskId,
@@ -209,6 +216,8 @@ export function useAppState() {
     focusMode,
     setFocusMode,
     activePomodoroSession,
-    setActivePomodoroSession
+    setActivePomodoroSession,
+    activeCollaborationSession,
+    setActiveCollaborationSession
   };
 }
