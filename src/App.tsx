@@ -15,6 +15,10 @@ import { CollaborationView } from '@/components/CollaborationView';
 import { IntegrationsView } from '@/components/IntegrationsView';
 import { AdminView } from '@/components/AdminView';
 import { ClientPortalView } from '@/components/ClientPortalView';
+import { FocusAssistantView } from '@/components/FocusAssistantView';
+import { IntelligentTimeView } from '@/components/IntelligentTimeView';
+import { WellnessView } from '@/components/WellnessView';
+import { FutureTechView } from '@/components/FutureTechView';
 import { FocusMode } from '@/components/FocusMode';
 import { SmartNotifications } from '@/components/SmartNotifications';
 import { AIAssistantFAB } from '@/components/AIAssistantFAB';
@@ -120,7 +124,9 @@ function App() {
 
   const renderCurrentView = () => {
     const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
+    const advancedViews = ['focus-assistant', 'intelligent-time', 'wellness', 'future-tech'];
     const isEnterpriseView = enterpriseViews.includes(currentView);
+    const isAdvancedView = advancedViews.includes(currentView);
     
     const ViewComponent = () => {
       switch (currentView) {
@@ -154,6 +160,14 @@ function App() {
           return <AdminView />;
         case 'client-portal':
           return <ClientPortalView />;
+        case 'focus-assistant':
+          return <FocusAssistantView />;
+        case 'intelligent-time':
+          return <IntelligentTimeView />;
+        case 'wellness':
+          return <WellnessView />;
+        case 'future-tech':
+          return <FutureTechView />;
         case 'notes':
         case 'folders':
         default:

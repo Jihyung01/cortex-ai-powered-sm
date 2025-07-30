@@ -239,7 +239,7 @@ export interface TimeBlock {
   color?: string;
 }
 
-export type ViewMode = 'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics' | 'ai-assistant' | 'team' | 'projects' | 'collaboration' | 'integrations' | 'admin' | 'client-portal';
+export type ViewMode = 'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics' | 'ai-assistant' | 'team' | 'projects' | 'collaboration' | 'integrations' | 'admin' | 'client-portal' | 'focus-assistant' | 'intelligent-time' | 'wellness' | 'future-tech';
 
 export interface TaskFilters {
   query: string;

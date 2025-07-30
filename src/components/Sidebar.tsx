@@ -20,7 +20,11 @@ import {
   Plug,
   Shield,
   Globe,
-  Building
+  Building,
+  Target,
+  Clock,
+  Heart,
+  Rocket
 } from '@phosphor-icons/react';
 import { useAppState } from '@/hooks/use-notes';
 import { useWorkspace } from '@/hooks/use-workspace';
@@ -40,6 +44,13 @@ export function Sidebar() {
     { id: 'tasks', label: 'Tasks', icon: CheckSquare },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'ai-assistant', label: 'AI Assistant', icon: MessageCircle },
+  ];
+
+  const innovativeItems = [
+    { id: 'focus-assistant', label: 'Focus Assistant', icon: Target, badge: 'AI' },
+    { id: 'intelligent-time', label: 'Smart Time', icon: Clock, badge: 'AI' },
+    { id: 'wellness', label: 'Wellness', icon: Heart, badge: 'Beta' },
+    { id: 'future-tech', label: 'Future Tech', icon: Rocket, badge: 'New' }
   ];
 
   const enterpriseItems = [
@@ -157,6 +168,56 @@ export function Sidebar() {
             );
           })}
         </div>
+
+        {/* Innovative Features Section */}
+        <>
+          {!sidebarCollapsed && (
+            <>
+              <Separator className="my-4" />
+              <div className="text-xs font-medium text-muted-foreground mb-2 px-2">
+                INNOVATIVE FEATURES
+              </div>
+            </>
+          )}
+          <div className="space-y-1">
+            {innovativeItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentView === item.id;
+              
+              return (
+                <Button
+                  key={item.id}
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  className={cn(
+                    'w-full justify-start',
+                    sidebarCollapsed && 'px-2'
+                  )}
+                  onClick={() => setCurrentView(item.id as any)}
+                >
+                  <Icon size={16} className={sidebarCollapsed ? '' : 'mr-2'} />
+                  {!sidebarCollapsed && (
+                    <div className="flex items-center justify-between w-full">
+                      <span>{item.label}</span>
+                      {item.badge && (
+                        <Badge 
+                          variant="secondary" 
+                          className={cn(
+                            "text-xs ml-2",
+                            item.badge === 'AI' && "bg-purple-100 text-purple-700",
+                            item.badge === 'Beta' && "bg-blue-100 text-blue-700",
+                            item.badge === 'New' && "bg-green-100 text-green-700"
+                          )}
+                        >
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </Button>
+              );
+            })}
+          </div>
+        </>
 
         {/* Enterprise Section */}
         {currentWorkspace && filteredEnterpriseItems.length > 0 && (
