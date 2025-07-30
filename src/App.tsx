@@ -8,7 +8,10 @@ import { KanbanView } from '@/components/KanbanView';
 import { TimelineView } from '@/components/TimelineView';
 import { CalendarView } from '@/components/CalendarView';
 import { AnalyticsView } from '@/components/AnalyticsView';
+import { AIAssistantView } from '@/components/AIAssistantView';
 import { FocusMode } from '@/components/FocusMode';
+import { SmartNotifications } from '@/components/SmartNotifications';
+import { AIAssistantFAB } from '@/components/AIAssistantFAB';
 import { useAppState } from '@/hooks/use-notes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
@@ -35,6 +38,8 @@ function App() {
         return <CalendarView />;
       case 'analytics':
         return <AnalyticsView />;
+      case 'ai-assistant':
+        return <AIAssistantView />;
       case 'notes':
       case 'folders':
       default:
@@ -66,6 +71,12 @@ function App() {
         richColors
         closeButton
       />
+
+      {/* Smart AI Notifications */}
+      <SmartNotifications />
+
+      {/* AI Assistant FAB */}
+      <AIAssistantFAB />
     </div>
   );
 }

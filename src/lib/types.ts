@@ -135,7 +135,7 @@ export interface TimeBlock {
   color?: string;
 }
 
-export type ViewMode = 'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics';
+export type ViewMode = 'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics' | 'ai-assistant';
 
 export interface TaskFilters {
   query: string;
@@ -169,4 +169,65 @@ export interface AppState {
   };
   focusMode: boolean;
   activePomodoroSession?: string;
+}
+
+// AI Assistant Types
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  type?: 'text' | 'task_suggestion' | 'productivity_insight' | 'goal_update';
+  metadata?: {
+    relatedTaskIds?: string[];
+    relatedNoteIds?: string[];
+    suggestedActions?: string[];
+    confidence?: number;
+  };
+}
+
+export interface ProductivityGoal {
+  id: string;
+  title: string;
+  description: string;
+  type: 'daily' | 'weekly' | 'monthly' | 'custom';
+  targetValue: number;
+  currentValue: number;
+  unit: string; // e.g., 'tasks', 'hours', 'notes'
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ProductivityInsight {
+  id: string;
+  type: 'pattern' | 'recommendation' | 'achievement' | 'warning';
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high';
+  actionItems: string[];
+  confidence: number;
+  createdAt: Date;
+  isRead: boolean;
+  relatedData?: {
+    taskIds?: string[];
+    noteIds?: string[];
+    timeRange?: { start: Date; end: Date };
+  };
+}
+
+export interface AIAssistantState {
+  isEnabled: boolean;
+  voiceInputEnabled: boolean;
+  autoSuggestions: boolean;
+  dailyReportsEnabled: boolean;
+  weeklyReportsEnabled: boolean;
+  focusTimeOptimization: boolean;
+  smartScheduling: boolean;
+  intelligentReminders: boolean;
+  lastInteraction?: Date;
+  preferredCommunicationStyle: 'casual' | 'professional' | 'encouraging';
+  personalityTone: 'neutral' | 'enthusiastic' | 'analytical';
 }

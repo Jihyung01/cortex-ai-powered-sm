@@ -184,7 +184,7 @@ export function useSearch() {
 }
 
 export function useAppState() {
-  const [currentView, setCurrentView] = useKV<'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics'>('cortex-current-view', 'dashboard');
+  const [currentView, setCurrentView] = useKV<'dashboard' | 'notes' | 'folders' | 'search' | 'templates' | 'tasks' | 'kanban' | 'timeline' | 'calendar' | 'analytics' | 'ai-assistant'>('cortex-current-view', 'dashboard');
   const [selectedNoteId, setSelectedNoteId] = useKV<string | undefined>('cortex-selected-note', undefined);
   const [selectedTaskId, setSelectedTaskId] = useKV<string | undefined>('cortex-selected-task', undefined);
   const [sidebarCollapsed, setSidebarCollapsed] = useKV<boolean>('cortex-sidebar-collapsed', false);

@@ -18,7 +18,8 @@ import {
   CalendarBlank,
   ChartLine,
   Timer,
-  Columns
+  Columns,
+  Robot
 } from '@phosphor-icons/react';
 import { useNotes, useAppState } from '@/hooks/use-notes';
 import { useTasks } from '@/hooks/use-tasks';
@@ -56,6 +57,12 @@ export function Sidebar({ className }: SidebarProps) {
       icon: Brain,
       view: 'dashboard' as const,
       count: notes.length + tasks.length
+    },
+    {
+      id: 'ai-assistant',
+      label: 'AI Assistant',
+      icon: Robot,
+      view: 'ai-assistant' as const
     },
     {
       id: 'notes',
