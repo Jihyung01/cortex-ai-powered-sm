@@ -335,9 +335,57 @@ body {
   [role="button"],
   input,
   select,
-  textarea {
+  textarea,
+  .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  /* Larger touch targets for mobile */
+  .mobile-touch {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Mobile-first responsive breakpoints */
+@media (max-width: 640px) {
+  /* Mobile styles */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .glass-card {
+    border-radius: 1rem;
+    margin: 0.5rem;
+  }
+  
+  /* Mobile typography */
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+  
+  /* Mobile spacing */
+  .mobile-spacing {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  /* Tablet styles */
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Desktop styles */
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
 
@@ -351,4 +399,186 @@ body {
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Optimize glassmorphism for mobile performance */
+  .glass,
+  .glass-card,
+  .glass-panel,
+  .glass-elevated {
+    backdrop-filter: blur(8px); /* Reduced blur for better performance */
+  }
+  
+  /* Mobile-friendly animations */
+  .spring-bounce,
+  .spring-slide-up {
+    animation-duration: 0.3s; /* Faster animations on mobile */
+  }
+  
+  /* Mobile touch optimizations */
+  .mobile-list-item {
+    padding: 1rem;
+    margin: 0.5rem 0;
+    touch-action: pan-y; /* Allow vertical scrolling only */
+  }
+  
+  /* Swipe indicator */
+  .swipe-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: var(--muted-foreground);
+    border-radius: 2px;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+  
+  .swipe-indicator.left {
+    left: 8px;
+  }
+  
+  .swipe-indicator.right {
+    right: 8px;
+  }
+  
+  /* Pull to refresh styles */
+  .pull-refresh-indicator {
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .pull-refresh-indicator.pulling {
+    transform: translateY(0);
+  }
+  
+  /* Mobile FAB */
+  .mobile-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 50;
+    transition: transform 0.3s ease;
+  }
+  
+  .mobile-fab.dragging {
+    transform: scale(1.1);
+    z-index: 60;
+  }
+  
+  /* Mobile bottom sheet */
+  .mobile-bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 90vh;
+    background: var(--card);
+    border-radius: 1.5rem 1.5rem 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    touch-action: none;
+  }
+  
+  .mobile-bottom-sheet .drag-handle {
+    width: 2.5rem;
+    height: 0.25rem;
+    background: var(--muted-foreground);
+    border-radius: 0.125rem;
+    margin: 0.75rem auto 1rem;
+    opacity: 0.5;
+  }
+}
+
+/* Performance optimizations */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  /* Disable all animations on mobile for users who prefer reduced motion */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .glass,
+  .glass-card,
+  .glass-panel,
+  .glass-elevated {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* iOS specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  .ios-safe-area {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Prevent iOS bounce scroll */
+  .prevent-bounce {
+    overscroll-behavior: none;
+  }
+  
+  /* Fix iOS input zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea {
+    font-size: 16px; /* Prevent zoom on focus */
+  }
+}
+
+/* Android specific optimizations */
+@media (max-width: 768px) {
+  /* Better touch response */
+  .android-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .android-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
+  .android-ripple:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+    transition: all 0.1s ease;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-landscape {
+    flex-direction: row;
+  }
+  
+  .mobile-bottom-sheet {
+    max-height: 80vh; /* Reduced height in landscape */
+  }
+  
+  .mobile-fab {
+    bottom: 1rem; /* Closer to edge in landscape */
+    right: 1rem;
+  }
 }

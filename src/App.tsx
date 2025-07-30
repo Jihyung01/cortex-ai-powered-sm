@@ -12,18 +12,93 @@ import { AIAssistantView } from '@/components/AIAssistantView';
 import { FocusMode } from '@/components/FocusMode';
 import { SmartNotifications } from '@/components/SmartNotifications';
 import { AIAssistantFAB } from '@/components/AIAssistantFAB';
+import { FloatingActionButton } from '@/components/FloatingActionButton';
+import { PullToRefresh } from '@/components/PullToRefresh';
+import { BottomSheet, QuickNoteCreator } from '@/components/BottomSheet';
+import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { useAppState } from '@/hooks/use-notes';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile, usePWA } from '@/hooks/use-mobile';
 import { useGestureSupport, useKeyboardNavigation } from '@/hooks/use-accessibility';
+import { useNativeFeatures } from '@/hooks/use-native-features';
+import { useOffline } from '@/hooks/use-offline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageTransitions, springPresets } from '@/hooks/use-motion';
 import { cn } from '@/lib/utils';
+import { useState, useEffect, useCallback } from 'react';
 
 function App() {
   const { currentView, sidebarCollapsed, focusMode } = useAppState();
   const isMobile = useIsMobile();
   const { prefersReducedMotion, getAnimationProps } = useGestureSupport();
   const { isKeyboardUser } = useKeyboardNavigation();
+  const { setupInstallPrompt } = useNativeFeatures();
+  const { syncPendingActions } = useOffline();
+  const { isServiceWorkerReady } = usePWA();
+  
+  // Mobile-specific state
+  const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Setup PWA features
+  useEffect(() => {
+    const cleanup = setupInstallPrompt();
+    return cleanup;
+  }, [setupInstallPrompt]);
+
+  // Handle URL parameters for PWA shortcuts
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    
+    if (action === 'new-note') {
+      setIsQuickNoteOpen(true);
+    }
+  }, []);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await syncPendingActions();
+      // Simulate data refresh
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } finally {
+      setRefreshing(false);
+    }
+  }, [syncPendingActions]);
+
+  const handleCreateNote = useCallback(() => {
+    setIsQuickNoteOpen(true);
+  }, []);
+
+  const handleCreateTask = useCallback(() => {
+    // Open task creation (implement similar to note creation)
+    console.log('Create task');
+  }, []);
+
+  const handleVoiceNote = useCallback(() => {
+    // Open voice note recording
+    console.log('Voice note');
+  }, []);
+
+  const handleCameraNote = useCallback(() => {
+    // Open camera for note
+    console.log('Camera note');
+  }, []);
+
+  const handleQuickShare = useCallback(() => {
+    // Open quick share
+    console.log('Quick share');
+  }, []);
+
+  const handleSettings = useCallback(() => {
+    // Open settings
+    console.log('Settings');
+  }, []);
+
+  const handleSaveNote = useCallback(async (noteData: any) => {
+    // Save note logic
+    console.log('Saving note:', noteData);
+  }, []);
 
   const renderCurrentView = () => {
     switch (currentView) {
@@ -63,6 +138,27 @@ function App() {
     );
   }
 
+  const mainContent = (
+    <main 
+      id="main-content"
+      className={cn(
+        "flex-1 overflow-hidden transition-all duration-500 ease-out",
+        !isMobile && !sidebarCollapsed && "ml-0",
+        !isMobile && sidebarCollapsed && "ml-0"
+      )}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentView}
+          {...getAnimationProps(pageTransitions)}
+          className="h-full"
+        >
+          {renderCurrentView()}
+        </motion.div>
+      </AnimatePresence>
+    </main>
+  );
+
   return (
     <motion.div 
       className={cn(
@@ -73,29 +169,47 @@ function App() {
       animate={{ opacity: 1 }}
       transition={springPresets.gentle}
     >
+      {/* Offline Status Indicator */}
+      <OfflineIndicator />
+
       {/* Sidebar */}
-      <Sidebar />
+      {!isMobile && <Sidebar />}
       
-      {/* Main Content */}
-      <main className={cn(
-        "flex-1 overflow-hidden transition-all duration-500 ease-out",
-        !isMobile && !sidebarCollapsed && "ml-0",
-        !isMobile && sidebarCollapsed && "ml-0"
-      )}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentView}
-            {...getAnimationProps(pageTransitions)}
-            className="h-full"
-          >
-            {renderCurrentView()}
-          </motion.div>
-        </AnimatePresence>
-      </main>
+      {/* Main Content with Pull-to-Refresh */}
+      {isMobile ? (
+        <PullToRefresh onRefresh={handleRefresh} disabled={refreshing}>
+          {mainContent}
+        </PullToRefresh>
+      ) : (
+        mainContent
+      )}
+
+      {/* Mobile Navigation (if needed) */}
+      {isMobile && (
+        // Mobile bottom navigation could go here if needed
+        null
+      )}
+
+      {/* Floating Action Button */}
+      <FloatingActionButton
+        onCreateNote={handleCreateNote}
+        onCreateTask={handleCreateTask}
+        onVoiceNote={handleVoiceNote}
+        onCameraNote={handleCameraNote}
+        onQuickShare={handleQuickShare}
+        onSettings={handleSettings}
+      />
+
+      {/* Quick Note Creator */}
+      <QuickNoteCreator
+        isOpen={isQuickNoteOpen}
+        onClose={() => setIsQuickNoteOpen(false)}
+        onSave={handleSaveNote}
+      />
 
       {/* Toast Notifications */}
       <Toaster 
-        position="top-right"
+        position={isMobile ? "top-center" : "top-right"}
         richColors
         closeButton
         className="glassmorphism-toaster"
@@ -104,8 +218,8 @@ function App() {
       {/* Smart AI Notifications */}
       <SmartNotifications />
 
-      {/* AI Assistant FAB */}
-      <AIAssistantFAB />
+      {/* AI Assistant FAB (desktop only, replaced by main FAB on mobile) */}
+      {!isMobile && <AIAssistantFAB />}
       
       {/* Accessibility: Skip to main content */}
       <a 

@@ -2,23 +2,43 @@
 
 ## Core Purpose & Success
 
-**Mission Statement**: Cortex is an intelligent productivity platform that seamlessly integrates advanced note-taking with sophisticated task management, powered by AI to enhance cognitive performance and organizational efficiency.
+**Mission Statement**: Cortex is an intelligent productivity platform that seamlessly integrates advanced note-taking with sophisticated task management, powered by AI to enhance cognitive performance and organizational efficiency, with a mobile-first approach for modern productivity.
 
 **Success Indicators**: 
-- High user engagement with both notes and tasks features
-- Increased productivity metrics through AI insights
-- Seamless workflow between note-taking and task execution
-- Positive user feedback on AI-powered features
+- High user engagement with both notes and tasks features across all devices
+- Increased productivity metrics through AI insights and mobile optimization
+- Seamless workflow between note-taking and task execution on any platform
+- Positive user feedback on AI-powered features and mobile experience
+- High PWA installation and retention rates
 
-**Experience Qualities**: Intelligent, Seamless, Empowering
+**Experience Qualities**: Intelligent, Seamless, Empowering, Mobile-Native
 
 ## Project Classification & Approach
 
-**Complexity Level**: Complex Application (advanced functionality with sophisticated AI integration, cross-feature linking, and analytics)
+**Complexity Level**: Complex Application (advanced functionality with sophisticated AI integration, cross-feature linking, analytics, and progressive web app capabilities)
 
-**Primary User Activity**: Creating, Acting, and Interacting (hybrid productivity tool supporting both content creation and task execution)
+**Primary User Activity**: Creating, Acting, and Interacting (hybrid productivity tool supporting both content creation and task execution with native mobile functionality)
 
 ## Essential Features
+
+### Mobile-First Core Features
+- **Progressive Web App**: Full offline functionality with service worker implementation
+- **Native Mobile Interactions**: 
+  - Swipe gestures for quick actions (archive, delete, complete)
+  - Pull-to-refresh for data synchronization
+  - Long-press contextual menus
+  - Touch-optimized interface elements
+- **Mobile Performance Optimizations**:
+  - Virtual list rendering for large datasets
+  - Lazy loading for images and components
+  - Code splitting for faster initial load
+  - Infinite scroll with optimized rendering
+- **Native Device Integration**:
+  - Camera API for direct image capture in notes
+  - Share API for content sharing
+  - Geolocation for location-based reminders
+  - Push notifications for task reminders
+  - File API for document attachments
 
 ### Core Note-Taking Features
 - **Smart Editor**: Rich text editor with markdown support, drag-and-drop functionality
@@ -26,6 +46,10 @@
 - **Advanced Search**: Full-text search with intelligent filters
 - **Organization**: Hierarchical folder structure, favorites system, recent notes dashboard
 - **Templates**: Pre-built templates for various use cases
+- **Mobile Enhancements**: 
+  - Bottom sheet modals for optimal thumb reach
+  - Voice input support for hands-free note creation
+  - Quick note creation from floating action button
 
 ### Advanced Task Management System
 - **Smart Task Creation**: Natural language processing for task creation ("Call John tomorrow at 2pm")
@@ -35,18 +59,26 @@
   - Automatic task breakdown for complex projects
   - Productivity analytics and insights
 - **Multiple Views**:
-  - Interactive Kanban board with drag-and-drop
+  - Interactive Kanban board with touch-friendly drag-and-drop
   - Gantt chart timeline for project planning
-  - Calendar integration with time blocking
-  - List view with advanced filtering
+  - Mobile-optimized calendar integration
+  - Swipe-enabled list view with quick actions
 - **Pomodoro Integration**: Built-in focus mode with customizable timer settings
 - **Task Analytics**: Comprehensive productivity metrics and burndown charts
+
+### Offline & Synchronization Features
+- **Offline-First Architecture**: Complete functionality without internet connection
+- **Background Sync**: Automatic synchronization when connection is restored
+- **Pending Actions Queue**: Visual indicators for unsynchronized changes
+- **Conflict Resolution**: Intelligent merging of offline and online changes
+- **Local Storage**: Persistent data with efficient caching strategies
 
 ### Cross-Feature Integration
 - **Task-Note Linking**: Connect tasks to relevant notes for context
 - **AI Insights**: Cross-analysis of notes and tasks for productivity recommendations
 - **Unified Search**: Find both notes and tasks in a single search interface
 - **Quick Actions**: Create tasks from notes, reference notes in tasks
+- **Mobile Quick Actions**: Floating action button with expandable menu for rapid content creation
 
 ### AI Assistant & Productivity Coaching
 - **Conversational AI Interface**:
@@ -113,10 +145,44 @@
 ### UI Elements & Component Selection
 **Component Usage**: 
 - Cards for content containers (notes, tasks, analytics panels)
-- Dialogs for focused interactions (creation, editing)
+- Bottom sheets for mobile-focused interactions (creation, editing)
+- Floating action buttons for primary mobile actions
 - Badges for status, priority, and metadata
 - Progress bars for task completion and analytics
-- Kanban-style layouts for task boards
+- Swipe-enabled lists for mobile gestures
+- Pull-to-refresh components for data synchronization
+
+### Mobile-First Design System
+
+**Mobile-Optimized Interactions**:
+- **Touch-First Interface**: All interactive elements sized for 44px minimum touch targets
+- **Swipe Gestures**: Left/right swipes for quick actions (archive, delete, complete tasks)
+- **Pull-to-Refresh**: Intuitive data refresh with visual feedback and haptic confirmation
+- **Bottom Sheets**: Modal interfaces optimized for thumb reach and single-handed operation
+- **Floating Actions**: Expandable FAB with quick access to primary creation functions
+- **Long-Press Menus**: Context-sensitive actions revealed through extended touch
+
+**Progressive Web App Features**:
+- **Offline-First Architecture**: Complete functionality without internet connectivity
+- **App-Like Experience**: Standalone display mode with native app behavior
+- **Install Prompts**: Smart installation suggestions with contextual timing
+- **Push Notifications**: Intelligent reminders and updates with user preference controls
+- **Background Sync**: Seamless data synchronization when connection is restored
+- **Share Integration**: Native sharing capabilities for notes and tasks
+
+**Performance Optimizations**:
+- **Virtual List Rendering**: Efficient handling of large datasets with minimal memory footprint
+- **Lazy Loading**: Images and components loaded on-demand to reduce initial bundle size
+- **Code Splitting**: Route-based and feature-based splitting for faster load times
+- **Service Worker Caching**: Intelligent caching strategies for offline functionality
+- **Optimized Animations**: Reduced complexity on mobile devices while maintaining visual appeal
+
+**Native Device Integration**:
+- **Camera API**: Direct photo capture for note attachments
+- **Geolocation**: Location-based reminders and context
+- **File API**: Document upload and attachment handling
+- **Share API**: Cross-app content sharing capabilities
+- **Haptic Feedback**: Tactile responses for user interactions and confirmations
 
 ### Cutting-Edge Visual Design System
 
@@ -130,7 +196,7 @@
 **Advanced Interaction Design**:
 - **Micro-interactions**: Every UI element responds with purpose-built animations (hover states, click feedback, focus transitions)
 - **Smooth Transitions**: Custom easing curves create fluid navigation between views and states
-- **Gesture Support**: Touch-optimized interactions including swipe actions, long-press menus, and pinch gestures
+- **Mobile Gesture Support**: Touch-optimized interactions including swipe actions, long-press menus, and pinch gestures
 - **Contextual Guidance**: Progressive tooltips and hints that appear based on user behavior and feature discovery
 - **Progressive Disclosure**: Complex features revealed gradually with smooth animations and clear visual hierarchy
 
@@ -142,10 +208,11 @@
 - **Customizable Widgets**: Drag-and-drop dashboard layout with snap animations and visual feedback
 
 **Performance & Accessibility Excellence**:
-- **60fps Animations**: GPU-accelerated rendering with optimized animation loops
+- **60fps Animations**: GPU-accelerated rendering with optimized animation loops (reduced complexity on mobile)
 - **Full Keyboard Navigation**: Complete accessibility with visible focus states and logical tab order
 - **Screen Reader Support**: Comprehensive ARIA labels and semantic HTML structure
 - **Adaptive Preferences**: High contrast mode, reduced motion settings, and accessibility customization
+- **Mobile Accessibility**: Touch-friendly targets, voice input support, and orientation-aware layouts
 - **Touch-First Design**: Generous touch targets (44px minimum) with responsive feedback
 
 **Animation Philosophy**: Every animation serves a functional purpose - orientation during navigation, relationship establishment between elements, interaction feedback, and attention guidance. Movements follow natural physics with appropriate mass, elasticity, and momentum characteristics.
