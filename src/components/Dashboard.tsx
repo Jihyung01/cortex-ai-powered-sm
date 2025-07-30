@@ -492,7 +492,7 @@ export function Dashboard() {
                                   transition={{ delay: 0.7 + index * 0.1 }}
                                 >
                                   {count}
-                              </div>
+                              </motion.span>
                             </motion.div>
                           );
                         })}
