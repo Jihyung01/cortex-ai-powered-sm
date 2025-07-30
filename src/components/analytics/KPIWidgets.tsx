@@ -9,7 +9,8 @@ import {
   ClockIcon, 
   CheckCircleIcon,
   UsersIcon,
-  TargetIcon
+  DocumentTextIcon,
+  FlagIcon
 } from '@heroicons/react/24/outline';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
@@ -75,7 +76,7 @@ export function KPIWidgets({ data, timeRange }: KPIWidgetsProps) {
         value: totalNotes,
         change: 8.7,
         trend: 'up',
-        icon: TargetIcon,
+        icon: DocumentTextIcon,
         color: 'text-purple-600',
         sparklineData: recentData.map(d => ({ value: d.notes })),
         unit: 'notes'
@@ -105,7 +106,7 @@ export function KPIWidgets({ data, timeRange }: KPIWidgetsProps) {
         value: '68%',
         change: 5.8,
         trend: 'up',
-        icon: TargetIcon,
+        icon: FlagIcon,
         color: 'text-indigo-600',
         target: 100,
         unit: '%'
