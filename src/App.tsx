@@ -367,8 +367,10 @@ function App() {
       id="main-content"
       className={cn(
         "flex-1 overflow-hidden transition-all duration-500 ease-out",
-        !isMobile && !sidebarCollapsed && "ml-0",
-        !isMobile && sidebarCollapsed && "ml-0"
+        isMobile && !sidebarCollapsed && "ml-64", // Add margin for mobile when sidebar is open
+        isMobile && sidebarCollapsed && "ml-16", // Smaller margin when collapsed
+        !isMobile && !sidebarCollapsed && "ml-64", // Desktop margins
+        !isMobile && sidebarCollapsed && "ml-16"
       )}
     >
       <AnimatePresence mode="wait">
@@ -433,8 +435,8 @@ function App() {
         {/* Offline Status Indicator */}
         <OfflineIndicator />
 
-        {/* Sidebar */}
-        {!isMobile && <Sidebar />}
+        {/* Sidebar - now shows on mobile too */}
+        <Sidebar />
         
         {/* Main Content with Pull-to-Refresh */}
         {isMobile ? (
@@ -444,23 +446,22 @@ function App() {
         ) : (
           mainContent
         )}
-
-        {/* Mobile Navigation (if needed) */}
-        {isMobile && (
-          // Mobile bottom navigation could go here if needed
-          null
-        )}
       </div>
 
-      {/* Floating Action Button */}
-      <FloatingActionButton
-        onCreateNote={handleCreateNote}
-        onCreateTask={handleCreateTask}
-        onVoiceNote={handleVoiceNote}
-        onCameraNote={handleCameraNote}
-        onQuickShare={handleQuickShare}
-        onSettings={handleSettings}
-      />
+      {/* Floating Action Button - positioned to not overlap with sidebar */}
+      <div className={cn(
+        "fixed z-50",
+        isMobile && !sidebarCollapsed ? "bottom-6 right-6" : "bottom-6 right-6"
+      )}>
+        <FloatingActionButton
+          onCreateNote={handleCreateNote}
+          onCreateTask={handleCreateTask}
+          onVoiceNote={handleVoiceNote}
+          onCameraNote={handleCameraNote}
+          onQuickShare={handleQuickShare}
+          onSettings={handleSettings}
+        />
+      </div>
 
       {/* Quick Note Creator */}
       <QuickNoteCreator
@@ -526,12 +527,7 @@ function AppWithAuth() {
     console.log('Not authenticated or no user, showing login form');
     return <EnterpriseLoginForm onSuccess={() => {
       console.log('Login success callback triggered');
-      // Small delay to allow auth state to update, then go to dashboard
-      setTimeout(() => {
-        // Force the app to refresh and load with dashboard view
-        window.location.hash = ''; // Clear any existing hash
-        window.location.reload();
-      }, 100);
+      // Don't reload - just let React handle the state change
     }} />;
   }
 

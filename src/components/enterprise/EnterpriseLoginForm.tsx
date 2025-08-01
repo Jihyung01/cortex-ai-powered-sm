@@ -100,12 +100,11 @@ export function EnterpriseLoginForm({ onSuccess }: LoginFormProps) {
         description: 'Loading Cortex dashboard with full functionality'
       });
       
-      // Simulate the login process by directly activating demo mode
-      // This will trigger the auth provider to initialize demo mode
+      // Trigger authentication re-initialization by calling onSuccess immediately
+      // This will cause the AuthenticationProvider to recognize demo mode
       setTimeout(() => {
-        // Force page reload to trigger authentication provider initialization
-        window.location.href = window.location.origin + window.location.pathname;
-      }, 500);
+        onSuccess?.();
+      }, 100);
       
     } catch (error) {
       console.error('Demo mode activation failed:', error);

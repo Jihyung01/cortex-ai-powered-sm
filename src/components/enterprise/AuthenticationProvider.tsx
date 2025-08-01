@@ -62,11 +62,14 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     initializeAuth();
-  }, []);
+  }, [sessionData]); // Also depend on sessionData
 
+  // Add safety check and better session management
   const initializeAuth = async () => {
     try {
       console.log('Initializing auth...');
+      setAuthState(prev => ({ ...prev, isLoading: true }));
+      
       // Check for demo mode first
       const isDemoMode = localStorage.getItem('cortex-demo-mode') === 'true';
       
@@ -81,6 +84,11 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       console.log('Checking session data...');
       if (sessionData?.token && sessionData?.expiresAt > Date.now()) {
         console.log('Valid session found, validating...');
+        // For demo/test user, skip API validation and directly activate
+        if (sessionData.userId === 'demo-user' || sessionData.userId === 'test-user-demo') {
+          await activateDemoMode();
+          return;
+        }
         await validateSession(sessionData.token);
       } else {
         console.log('No valid session, setting loading to false');
@@ -88,7 +96,7 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Auth initialization failed:', error);
-      await logout();
+      setAuthState(prev => ({ ...prev, isLoading: false, isAuthenticated: false, user: null }));
     }
   };
 
@@ -272,8 +280,10 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
       // Clear demo mode flag
       localStorage.removeItem('cortex-demo-mode');
       
-      // Clear session data
-      await setSessionData(null);
+      // Clear session data without causing a loop
+      if (sessionData) {
+        setSessionData(null);
+      }
       
       // Reset auth state
       setAuthState({
