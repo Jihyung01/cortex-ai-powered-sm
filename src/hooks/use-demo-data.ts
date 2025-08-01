@@ -17,11 +17,19 @@ export function useDemoData() {
 
   useEffect(() => {
     if (isDemoMode && !demoDataInitialized) {
-      populateDemoData();
+      console.log('Demo mode detected, initializing demo data...');
+      // Add a small delay to ensure auth state is stable
+      const timer = setTimeout(() => {
+        populateDemoData();
+      }, 100);
+      return () => clearTimeout(timer);
+    } else if (isDemoMode && demoDataInitialized) {
+      console.log('Demo data already initialized');
     }
   }, [isDemoMode, demoDataInitialized]);
 
   const populateDemoData = async () => {
+    console.log('Starting demo data population...');
     // Sample notes
     const sampleNotes = [
       {
@@ -463,21 +471,27 @@ Follow up meeting scheduled for next Friday to review progress.
     ];
 
     // Populate the data
+    console.log('Populating notes...');
     await setNotes((currentNotes) => {
       const existingIds = currentNotes.map(note => note.id);
       const newNotes = sampleNotes.filter(note => !existingIds.includes(note.id));
+      console.log(`Adding ${newNotes.length} new notes`);
       return [...currentNotes, ...newNotes];
     });
 
+    console.log('Populating tasks...');
     await setTasks((currentTasks) => {
       const existingIds = currentTasks.map(task => task.id);
       const newTasks = sampleTasks.filter(task => !existingIds.includes(task.id));
+      console.log(`Adding ${newTasks.length} new tasks`);
       return [...currentTasks, ...newTasks];
     });
 
+    console.log('Populating templates...');
     await setTemplates((currentTemplates) => {
       const existingIds = currentTemplates.map(template => template.id);
       const newTemplates = sampleTemplates.filter(template => !existingIds.includes(template.id));
+      console.log(`Adding ${newTemplates.length} new templates`);
       return [...currentTemplates, ...newTemplates];
     });
 

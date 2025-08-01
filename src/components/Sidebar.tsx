@@ -32,6 +32,7 @@ import { useWorkspace } from '@/hooks/use-workspace';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/components/enterprise';
 import { cn } from '@/lib/utils';
+import { useCallback } from 'react';
 
 export function Sidebar() {
   const { currentView, setCurrentView, sidebarCollapsed, setSidebarCollapsed } = useAppState();
@@ -40,6 +41,17 @@ export function Sidebar() {
   const isMobile = useIsMobile();
   
   const isDemoMode = user?.id === 'demo-user';
+
+  // Enhanced navigation handler with debugging
+  const handleNavigation = useCallback((viewId: string) => {
+    console.log(`Navigating to: ${viewId}`);
+    try {
+      setCurrentView(viewId as any);
+      console.log(`Navigation successful to: ${viewId}`);
+    } catch (error) {
+      console.error(`Navigation failed:`, error);
+    }
+  }, [setCurrentView]);
 
   const personalItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -186,7 +198,7 @@ export function Sidebar() {
                   'w-full justify-start',
                   sidebarCollapsed && 'px-2'
                 )}
-                onClick={() => setCurrentView(item.id as any)}
+                onClick={() => handleNavigation(item.id)}
               >
                 <Icon size={16} className={sidebarCollapsed ? '' : 'mr-2'} />
                 {!sidebarCollapsed && item.label}
@@ -218,7 +230,7 @@ export function Sidebar() {
                     'w-full justify-start',
                     sidebarCollapsed && 'px-2'
                   )}
-                  onClick={() => setCurrentView(item.id as any)}
+                  onClick={() => handleNavigation(item.id)}
                 >
                   <Icon size={16} className={sidebarCollapsed ? '' : 'mr-2'} />
                   {!sidebarCollapsed && (
@@ -269,7 +281,7 @@ export function Sidebar() {
                       'w-full justify-start',
                       sidebarCollapsed && 'px-2'
                     )}
-                    onClick={() => setCurrentView(item.id as any)}
+                    onClick={() => handleNavigation(item.id)}
                   >
                     <Icon size={16} className={sidebarCollapsed ? '' : 'mr-2'} />
                     {!sidebarCollapsed && item.label}
