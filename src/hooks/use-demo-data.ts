@@ -13,10 +13,12 @@ export function useDemoData() {
   const [tasks, setTasks] = useKV('cortex-tasks', []);
   const [templates, setTemplates] = useKV('cortex-templates', []);
 
-  const isDemoMode = user?.id === 'demo-user';
+  const isDemoMode = user?.id === 'demo-user' || user?.id === 'test-user-demo';
 
   useEffect(() => {
-    if (isDemoMode && !demoDataInitialized) {
+    console.log('Demo data hook effect running. isDemoMode:', isDemoMode, 'demoDataInitialized:', demoDataInitialized);
+    
+    if (isDemoMode && !demoDataInitialized && user) {
       console.log('Demo mode detected, initializing demo data...');
       // Add a small delay to ensure auth state is stable
       const timer = setTimeout(() => {
@@ -25,8 +27,10 @@ export function useDemoData() {
       return () => clearTimeout(timer);
     } else if (isDemoMode && demoDataInitialized) {
       console.log('Demo data already initialized');
+    } else if (isDemoMode && !user) {
+      console.log('Demo mode detected but user not yet available');
     }
-  }, [isDemoMode, demoDataInitialized]);
+  }, [isDemoMode, demoDataInitialized, user]);
 
   const populateDemoData = async () => {
     console.log('Starting demo data population...');

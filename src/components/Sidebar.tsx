@@ -40,7 +40,7 @@ export function Sidebar() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
-  const isDemoMode = user?.id === 'demo-user';
+  const isDemoMode = user?.id === 'demo-user' || user?.id === 'test-user-demo';
 
   // Enhanced navigation handler with debugging
   const handleNavigation = useCallback((viewId: string) => {

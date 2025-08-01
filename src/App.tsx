@@ -39,8 +39,17 @@ function App() {
   const { currentView, sidebarCollapsed, focusMode, setCurrentView } = useAppState();
   const { addNote } = useNotes();
   const { addTask } = useTasks();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const isMobile = useIsMobile();
+
+  // Add safety check - if user is still undefined but auth claims authenticated, wait
+  if (isAuthenticated && !user) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
   const { prefersReducedMotion, getAnimationProps } = useGestureSupport();
   const { isKeyboardUser } = useKeyboardNavigation();
   const { setupInstallPrompt } = useNativeFeatures();
@@ -50,8 +59,8 @@ function App() {
   // Initialize demo data if in demo mode
   useDemoData();
   
-  // Demo mode state
-  const isDemoMode = user?.id === 'demo-user';
+  // Demo mode state - add null checks to prevent errors
+  const isDemoMode = user?.id === 'demo-user' || user?.id === 'test-user-demo';
   const [showDemoBanner, setShowDemoBanner] = useState(false);
   
   // Mobile-specific state
@@ -80,32 +89,56 @@ function App() {
         
         // Handle URL-based routing
         const handleURLRouting = () => {
-          const hash = window.location.hash.slice(1); // Remove #
-          const urlParams = new URLSearchParams(window.location.search);
-          const viewParam = urlParams.get('view');
-          
-          // Determine target view from URL
-          let targetView = 'dashboard'; // Default to dashboard
-          
-          if (hash && hash !== '' && hash !== 'dashboard') {
-            targetView = hash;
-          } else if (viewParam && viewParam !== '') {
-            targetView = viewParam;
-          }
-          
-          // Update current view if needed
-          if (targetView !== currentView) {
-            try {
-              // Update the view using setCurrentView
-              setCurrentView(targetView as any);
-            } catch (error) {
-              console.warn('Could not update view from URL:', error);
+          try {
+            const hash = window.location.hash.slice(1); // Remove #
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewParam = urlParams.get('view');
+            
+            // Determine target view from URL
+            let targetView = 'dashboard'; // Default to dashboard
+            
+            if (hash && hash !== '' && hash !== 'dashboard') {
+              targetView = hash;
+            } else if (viewParam && viewParam !== '') {
+              targetView = viewParam;
             }
+            
+            // Validate and update current view if needed
+            if (targetView !== currentView && setCurrentView) {
+              try {
+                // Validate the target view is supported
+                const validViews = [
+                  'dashboard', 'notes', 'search', 'templates', 'tasks', 'kanban', 
+                  'timeline', 'calendar', 'analytics', 'ai-assistant', 'team', 
+                  'projects', 'collaboration', 'integrations', 'admin', 'client-portal',
+                  'focus-assistant', 'intelligent-time', 'wellness', 'future-tech'
+                ];
+                
+                if (validViews.includes(targetView)) {
+                  // Update the view using setCurrentView
+                  setCurrentView(targetView as any);
+                  console.log(`Successfully navigated to: ${targetView}`);
+                } else {
+                  console.warn(`Invalid view attempted: ${targetView}, defaulting to dashboard`);
+                  setCurrentView('dashboard');
+                }
+              } catch (error) {
+                console.warn('Could not update view from URL:', error);
+                // Fallback to dashboard on error
+                try {
+                  setCurrentView('dashboard');
+                } catch (fallbackError) {
+                  console.error('Could not set fallback view:', fallbackError);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('URL routing error:', error);
           }
         };
         
-        // Handle initial URL
-        handleURLRouting();
+        // Handle initial URL - with delay to ensure state is ready
+        setTimeout(handleURLRouting, 100);
         
         // Listen for URL changes
         window.addEventListener('hashchange', handleURLRouting);
@@ -117,14 +150,17 @@ function App() {
       }
     };
     
-    initializeApp();
+    // Only initialize if we have the necessary state
+    if (setCurrentView) {
+      initializeApp();
+    }
     
     // Cleanup event listeners
     return () => {
       window.removeEventListener('hashchange', () => {});
       window.removeEventListener('popstate', () => {});
     };
-  }, [currentView]);
+  }, [currentView, setCurrentView]); // Add setCurrentView as dependency
 
   // Sync URL with current view
   useEffect(() => {
@@ -278,21 +314,41 @@ function App() {
   }, [addNote]);
 
   const renderCurrentView = () => {
-    const ViewComponent = getViewComponent(currentView);
-    
-    const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
-    const isEnterpriseView = enterpriseViews.includes(currentView);
-    
-    // Wrap enterprise views with error boundary
-    if (isEnterpriseView) {
-      return (
-        <EnterpriseErrorBoundary>
-          <ViewComponent />
-        </EnterpriseErrorBoundary>
-      );
-    }
+    try {
+      // Ensure currentView is valid before getting component
+      if (!currentView) {
+        console.warn('Current view is undefined, defaulting to dashboard');
+        const DashboardComponent = getViewComponent('dashboard');
+        return <DashboardComponent />;
+      }
+      
+      const ViewComponent = getViewComponent(currentView);
+      
+      if (!ViewComponent) {
+        console.warn(`No component found for view: ${currentView}, defaulting to dashboard`);
+        const DashboardComponent = getViewComponent('dashboard');
+        return <DashboardComponent />;
+      }
+      
+      const enterpriseViews = ['team', 'projects', 'collaboration', 'integrations', 'admin', 'client-portal'];
+      const isEnterpriseView = enterpriseViews.includes(currentView);
+      
+      // Wrap enterprise views with error boundary
+      if (isEnterpriseView) {
+        return (
+          <EnterpriseErrorBoundary>
+            <ViewComponent />
+          </EnterpriseErrorBoundary>
+        );
+      }
 
-    return <ViewComponent />;
+      return <ViewComponent />;
+    } catch (error) {
+      console.error('Error rendering current view:', error);
+      // Fallback to dashboard on error
+      const DashboardComponent = getViewComponent('dashboard');
+      return <DashboardComponent />;
+    }
   };
 
   if (focusMode) {
@@ -451,11 +507,14 @@ function EnhancedApp() {
 
 // App component that handles authentication state
 function AppWithAuth() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  console.log('AppWithAuth render - isAuthenticated:', isAuthenticated, 'isLoading:', isLoading, 'user:', user?.id);
 
   // Skip onboarding completely - go directly to dashboard
 
   if (isLoading) {
+    console.log('Auth still loading...');
     return (
       <div className="h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -463,8 +522,10 @@ function AppWithAuth() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !user) {
+    console.log('Not authenticated or no user, showing login form');
     return <EnterpriseLoginForm onSuccess={() => {
+      console.log('Login success callback triggered');
       // Small delay to allow auth state to update, then go to dashboard
       setTimeout(() => {
         // Force the app to refresh and load with dashboard view
@@ -474,6 +535,7 @@ function AppWithAuth() {
     }} />;
   }
 
+  console.log('Authenticated with user:', user.id, 'rendering main app');
   // Always go directly to main app (dashboard)
   return <App />;
 }

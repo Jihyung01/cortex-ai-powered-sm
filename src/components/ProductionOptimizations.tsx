@@ -296,7 +296,14 @@ export const getViewComponent = (viewName: string) => {
     'help-center': LazyComprehensiveHelpCenter
   };
 
-  return componentMap[viewName] || LazyDashboard;
+  // Always return a valid component, fallback to Dashboard if not found
+  const component = componentMap[viewName];
+  if (!component) {
+    console.warn(`Component not found for view: ${viewName}, falling back to Dashboard`);
+    return LazyDashboard;
+  }
+  
+  return component;
 };
 
 /**

@@ -1,5 +1,6 @@
 import { useKV } from '@github/spark/hooks';
 import { useState, useCallback, useMemo } from 'react';
+import { useAuth } from '@/components/enterprise';
 import type { 
   Workspace, 
   TeamMember, 
@@ -12,6 +13,7 @@ import type {
 } from '../lib/types';
 
 export function useWorkspace() {
+  const { user } = useAuth();
   const [workspaces, setWorkspaces] = useKV<Workspace[]>('cortex-workspaces', []);
   const [currentWorkspaceId, setCurrentWorkspaceId] = useKV<string | undefined>('cortex-current-workspace', undefined);
   const [teamMembers, setTeamMembers] = useKV<TeamMember[]>('cortex-team-members', []);
@@ -25,10 +27,10 @@ export function useWorkspace() {
   }, [workspaces, currentWorkspaceId]);
 
   const currentUserMember = useMemo(() => {
-    // In a real app, this would get the current user's ID from authentication
-    const currentUserId = 'current-user-id'; // This would come from auth context
+    // Get current user's ID from authentication, with fallback
+    const currentUserId = user?.id || 'demo-user';
     return teamMembers.find(m => m.userId === currentUserId && m.workspaceId === currentWorkspaceId);
-  }, [teamMembers, currentWorkspaceId]);
+  }, [teamMembers, currentWorkspaceId, user?.id]);
 
   const createWorkspace = useCallback(async (workspaceData: Omit<Workspace, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newWorkspace: Workspace = {

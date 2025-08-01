@@ -46,12 +46,16 @@ const AuthContext = createContext<AuthContextType | null>(null);
  * Provides secure user authentication with role-based access control
  */
 export function AuthenticationProvider({ children }: { children: ReactNode }) {
+  console.log('AuthenticationProvider initialized');
+  
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     isAuthenticated: false,
     isLoading: true,
     permissions: []
   });
+
+  console.log('Current auth state:', authState);
 
   const [sessionData, setSessionData] = useKV('auth-session', null);
   const [userPreferences, setUserPreferences] = useKV('user-preferences', {});
@@ -62,8 +66,11 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
 
   const initializeAuth = async () => {
     try {
+      console.log('Initializing auth...');
       // Check for demo mode first
       const isDemoMode = localStorage.getItem('cortex-demo-mode') === 'true';
+      
+      console.log('Demo mode check:', isDemoMode);
       
       if (isDemoMode) {
         console.log('Demo mode detected, activating...');
@@ -71,9 +78,12 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      console.log('Checking session data...');
       if (sessionData?.token && sessionData?.expiresAt > Date.now()) {
+        console.log('Valid session found, validating...');
         await validateSession(sessionData.token);
       } else {
+        console.log('No valid session, setting loading to false');
         setAuthState(prev => ({ ...prev, isLoading: false }));
       }
     } catch (error) {
@@ -83,59 +93,69 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
   };
 
   const activateDemoMode = async () => {
-    const demoUser: User = {
-      id: 'demo-user',
-      email: 'demo@cortex.com', // Changed to match test account
-      name: 'Demo User',
-      avatar: '🚀',
-      role: 'admin', // Give full access in demo mode
-      permissions: [
-        'read:notes', 'write:notes', 'delete:notes',
-        'read:tasks', 'write:tasks', 'delete:tasks',
-        'read:analytics', 'write:analytics',
-        'read:team', 'write:team',
-        'read:projects', 'write:projects',
-        'read:collaboration', 'write:collaboration',
-        'read:integrations', 'write:integrations',
-        'admin:all'
-      ],
-      mfaEnabled: false,
-      lastLoginAt: new Date(),
-      createdAt: new Date()
-    };
-
-    console.log('Activating demo mode with user:', demoUser);
-
-    setAuthState({
-      user: demoUser,
-      isAuthenticated: true,
-      isLoading: false,
-      permissions: demoUser.permissions
-    });
-
-    // Set demo session data
-    await setSessionData({
-      token: 'demo-token',
-      expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
-      userId: demoUser.id
-    });
-
-    // Ensure we start at dashboard view
     try {
-      await spark.kv.set('cortex-current-view', 'dashboard');
-      // Clear any onboarding flags
-      localStorage.removeItem('cortex-onboarding-completed');
-      // Clear any tutorial or setup flags
-      localStorage.removeItem('tutorial-completed');
-      localStorage.removeItem('setup-completed');
-    } catch (error) {
-      console.warn('Could not set initial view state:', error);
-    }
+      console.log('Activating demo mode...');
+      const demoUser: User = {
+        id: 'demo-user',
+        email: 'demo@cortex.com', // Changed to match test account
+        name: 'Demo User',
+        avatar: '🚀',
+        role: 'admin', // Give full access in demo mode
+        permissions: [
+          'read:notes', 'write:notes', 'delete:notes',
+          'read:tasks', 'write:tasks', 'delete:tasks',
+          'read:analytics', 'write:analytics',
+          'read:team', 'write:team',
+          'read:projects', 'write:projects',
+          'read:collaboration', 'write:collaboration',
+          'read:integrations', 'write:integrations',
+          'admin:all'
+        ],
+        mfaEnabled: false,
+        lastLoginAt: new Date(),
+        createdAt: new Date()
+      };
 
-    await logAuditEvent('demo_mode_activated', {
-      userId: demoUser.id,
-      timestamp: new Date().toISOString()
-    });
+      console.log('Activating demo mode with user:', demoUser);
+
+      console.log('Setting auth state...');
+      setAuthState({
+        user: demoUser,
+        isAuthenticated: true,
+        isLoading: false,
+        permissions: demoUser.permissions
+      });
+
+      console.log('Setting session data...');
+      // Set demo session data
+      await setSessionData({
+        token: 'demo-token',
+        expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+        userId: demoUser.id
+      });
+
+      // Ensure we start at dashboard view
+      try {
+        await spark.kv.set('cortex-current-view', 'dashboard');
+        // Clear any onboarding flags
+        localStorage.removeItem('cortex-onboarding-completed');
+        // Clear any tutorial or setup flags
+        localStorage.removeItem('tutorial-completed');
+        localStorage.removeItem('setup-completed');
+      } catch (error) {
+        console.warn('Could not set initial view state:', error);
+      }
+
+      await logAuditEvent('demo_mode_activated', {
+        userId: demoUser.id,
+        timestamp: new Date().toISOString()
+      });
+      
+      console.log('Demo mode activation complete');
+    } catch (error) {
+      console.error('Demo mode activation error:', error);
+      throw error;
+    }
   };
 
   const validateSession = async (token: string) => {
